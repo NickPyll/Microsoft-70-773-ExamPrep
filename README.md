@@ -7,6 +7,11 @@ Study Guide for Microsoft 70-773
 - [Exam Description](#exam-description)
 - [Glossary](#glossary)
 
+# Chapter 1 - Read Data with R Server
+
+
+
+
 ## General Resources <a name="general-resources"></a>
 
 * [Learn Analytics @ Microsoft](http://learnanalytics.microsoft.com/)
