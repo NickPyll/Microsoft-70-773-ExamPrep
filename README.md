@@ -9,7 +9,143 @@ Study Guide for Microsoft 70-773
 
 # Chapter 1 - Read Data with R Server
 
+```{r}
+# Designating column classes
+col_classes <- c('VendorID' = "factor",
+                 'tpep_pickup_datetime' = "character",
+                 'tpep_dropoff_datetime' = "character",
+                 'passenger_count' = "integer",
+                 'trip_distance' = "numeric",
+                 'pickup_longitude' = "numeric",
+                 'pickup_latitude' = "numeric",
+                 'RateCodeID' = "factor",
+                 'store_and_fwd_flag' = "factor",
+                 'dropoff_longitude' = "numeric",
+                 'dropoff_latitude' = "numeric",
+                 'payment_type' = "factor",
+                 'fare_amount' = "numeric",
+                 'extra' = "numeric",
+                 'mta_tax' = "numeric",
+                 'tip_amount' = "numeric",
+                 'tolls_amount' = "numeric",
+                 'improvement_surcharge' = "numeric",
+                 'total_amount' = "numeric")
 
+# Import first 1000 rows
+nyc_sample_df <- read.csv('C:/yellow_tripdata_2016-01.csv', nrows = 1000, colClasses = col_classes)
+# View first 10 rows
+head(nyc_sample_df)
+
+```
+
+MRS has two ways of dealing with flat files:
+   1.  it can work directly with the flat files, meaning that it can read and write to flat files directly,
+   2.  it can covert flat files to a format called XDF (XDF stands for external data frame).
+
+Advantages of XDF over CSV:
+   1. XDF is compressed, and therefore much smaller than a CSV.
+   2. XDF read and processed much faster than CSV.
+ 
+Disadvantages of XDF:
+   1. Only recognized by MRS.
+   2. Runtime cost associated with conversion to XDF (though quickly offset by the reduced runtime of working with XDF file)
+   
+```{r}
+
+# Import first 6 months of 2016 Yellow Taxi Data into XDF
+
+input_xdf <- 'yellow_tripdata_2016.xdf'
+library(lubridate)
+most_recent_date <- ymd("2016-07-01") # the day of the months is irrelevant
+
+st <- Sys.time()
+for (ii in 1:6) {
+    # get each month's data and append it to the first month's data
+    file_date <- most_recent_date - months(ii)
+    input_csv <- sprintf('C:/yellow_tripdata_%s.csv', substr(file_date, 1, 7))
+    append <- if (ii == 1) "none" else "rows"
+    rxImport(input_csv, input_xdf, colClasses = col_classes, overwrite = TRUE, append = append)
+    print(input_csv)
+}
+Sys.time() - st # stores the time it took to import
+```
+As you can see below, it took about 17 minutes to load these six CSV files (~2 GB each) into an XDF
+```
+Rows Processed: 10906858
+[1] "yellow_tripdata_2016-01.csv"
+Rows Processed: 11382049 
+[1] "yellow_tripdata_2016-02.csv"
+Rows Processed: 12210952 
+[1] "yellow_tripdata_2016-03.csv"
+Rows Processed: 11934338 
+[1] "yellow_tripdata_2016-04.csv"
+Rows Processed: 11836853 
+[1] "yellow_tripdata_2016-05.csv"
+Rows Processed: 11135470 
+[1] "yellow_tripdata_2016-06.csv"
+
+Time difference of 16.90247 mins
+```
+Now that we have the data loaded into an XDF, let's benchmark performance by performing a summary on both data forms.
+
+```{r}
+
+nyc_xdf <- RxXdfData(input_xdf)
+system.time(
+rxsum_xdf <- rxSummary(~fare_amount, nyc_xdf) # provide statistical summaries for fare amount
+)
+rxsum_xdf
+
+Rows Processed: 69406520         
+   user  system elapsed 
+   0.02    0.00    1.98 
+Call:
+rxSummary(formula = ~fare_amount, data = nyc_xdf)
+
+Summary Statistics Results for: ~fare_amount
+Data: nyc_xdf (RxXdfData Data Source)
+File name: yellow_tripdata_2016.xdf
+Number of valid observations: 69406520 
+ 
+ Name        Mean     StdDev   Min    Max      ValidObs MissingObs
+ fare_amount 12.91626 128.1172 -957.6 628544.7 69406520 0      
+
+```
+
+Summary of XDF (six months of data) took about two seconds.
+
+```
+
+input_csv <- 'C:/Users/npylypiw/Documents/Training/Microsoft 70-773/Taxi Data/yellow_tripdata_2016-01.csv ' # we can only use one month's data unless we join the CSVs
+nyc_csv <- RxTextData(input_csv, colClasses = col_classes) # point to CSV file and provide column info
+system.time(
+  rxsum_csv <- rxSummary(~fare_amount, nyc_csv) # provide statistical summaries for fare amount
+)
+rxsum_csv
+
+   
+Rows Processed: 10906858         
+   user  system elapsed 
+   0.03    0.00   36.70 
+Call:
+rxSummary(formula = ~fare_amount, data = nyc_csv)
+
+Summary Statistics Results for: ~fare_amount
+Data: nyc_csv (RxTextData Data Source)
+File name: C:/yellow_tripdata_2016-01.csv
+Number of valid observations: 10906858 
+ 
+ Name        Mean     StdDev Min    Max      ValidObs MissingObs
+ fare_amount 12.48693 35.564 -957.6 111270.9 10906858 0  
+ 
+ ```
+
+The same procedure on a much smaller CSV (one month) took 37 seconds.
+
+New Functions:
+   - `RxXdfData` - 
+   - `RxTextData` -
+   - `rxSummary`
 
 
 ## General Resources <a name="general-resources"></a>
