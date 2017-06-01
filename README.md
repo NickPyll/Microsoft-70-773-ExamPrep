@@ -288,12 +288,14 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   - `call`
   - `categorical.type`
   
-`rxCrossTabs` Get counts of frequencies for combinations of factor levels
+`rxCrossTabs` Get counts (and sums when argument on left side) for combinations of factor levels
   - syntax `rxCrossTabs(formula, data, <options>)`
   - `formula` is flexible and can allowed you to analyze:
     - only one variable `~ x`
     - two variables `~ x:y`
     - or more... `~ x:y:z`
+    - sums of combinations... `sales ~ product:region`
+    - `means = TRUE` argument can be used to get similar output as `rxCube`
 
 `rxHistogram` Visual display of frequency distribution
   - syntax `rxHistogram(formula, data, <options>)`
@@ -340,11 +342,121 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   
 ## Visualizing the Data
 
+`rxCube` Get counts (and means when argument on left side) for combinations of factor levels
+  - syntax `rxCube(formula, data, <options>)`
+  - `formula` is flexible and can allowed you to analyze:
+    - only one variable `~ x`
+    - two variables `~ x:y`
+    - or more... `~ x:y:z`
+    - means of combinations... `price ~ product:region` 
+
+`rxFactors`- Another way to modify or create factors
+
+## Quiz
+
+  1. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf.  Which of the following code will produce similar values for Temp variable to `rxCube(Temp ~ Day:Month, "airquality.xdf")`?
+      + A. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf")`
+      + B. `rxCrossTabs(Temp ~ Month:Day, "airquality.xdf")`
+      + C. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = TRUE)`
+      + D. `xCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = FALSE)`
+
+  2. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf and the following code below:
+```
+    newlevs <- c("1973","1974","1975") 
+    rxFactors("airquality.xdf", outFile = "airquality.xdf", 
+          factorInfo = list(Year = list(newLevels = unique(newlevs))))
+```    
+Which of the following code will produce similar results?\
+
+```
+# A
+rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
+           transforms = list(Year = list(newLevels = unique(newlevs))), 
+           overwrite = TRUE)
+# B
+rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
+           transforms = list(Year = factor(Year, levels = newlevs)), 
+           overwrite = TRUE)
+# C
+rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
+           transformObjects = list(Year = list(newLevels = unique(newlevs))), 
+           overwrite = TRUE)
+# D
+rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
+           transforms = list(Year = factor(Year, levels = newlevels)), 
+           transformObjects = list(newlevels = unique(newlevs)), 
+           overwrite = TRUE)
+```           
+
+  3. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf and the following code below:
+
+```
+    newlevs <- c("1973","1974","1975") 
+    rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
+               transforms = list(Year = factor(Year, levels = newlevels)), 
+               transformObjects = list(newlevels = unique(newlevs)), 
+               overwrite = TRUE) 
+ ```   
+Which of the following code will produce similar results?
+
+```
+# A
+rxFactors("airquality.xdf", outFile = "airquality.xdf", 
+          transforms = list(Year = factor(Year, levels = newlevels)), 
+          transformObjects = list(newlevels = unique(newlevs)), 
+          overwrite = TRUE)
+# B
+rxFactors("airquality.xdf", outFile = "airquality.xdf", 
+          transforms = list(Year = list(newLevels = unique(newlevs))), 
+          overwrite = TRUE)
+# C
+rxFactors("airquality.xdf", outFile = "airquality.xdf", 
+          factorInfo = list(Year = list(newLevels = unique(newlevs))))
+# D
+rxFactors("airquality.xdf", outFile = "airquality.xdf", 
+          factorInfo = list(Year = factor(Year, levels = newlevs)))
+```
+
+  4. Which two are the differences between the output of `rxCrossTabs()` and `rxCube()`?
+      + A. The output of `rxCrossTabs()` function is in wide format.
+      + B. The output of `rxCrossTabs()` function is in long format.
+      + C. The output of `rxCube()` function is in wide format.
+      + D. The output of `rxCube()` function is in long format.
+
+  5. What are the three possible values that can be returned by the `rxCube()` function?
+      + A. a Text file
+      + B. an RxXdfData object
+      + C. a List
+      + D. a data.frame
+
+## Answers
+  1. C
+  2. D
+  3. C
+  4. AD
+  5. BCD
+  
 # Chapter 4 - Clustering and Modeling
 
 ## Clustering
    
+`rxKmeans`
+  - clustering algorithm
+  - `rxKmeans(formula, data, <options>)`
+  - must specify **only one** of `numClusters` or `centers`
+  
+## Modeling
 
+`rxLinMod`
+  - `rxLinMod(formula, data, <options>)`
+  - Lots of output available including `r.squared`, `f.pvalue`, `coef.p.value`
+
+`rxSplit`
+
+`rxPredict`
+
+`rxQuantile`
+  - `rxQuantile("varName", data, probs = seq(0, 1, 0.25))`
 
 
 ## General Resources <a name="general-resources"></a>
