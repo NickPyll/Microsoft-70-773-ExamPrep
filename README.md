@@ -80,13 +80,6 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   5. AC
   
 # Chapter 2 - Reading and Preparing Data
-  - Read supported data file formats, such as text files, SAS, and SPSS
-  - Convert data to XDF format
-  - Identify trade-offs between XDF and flat text files
-  - Read data through Open Database Connectivity (ODBC) data sources
-  - Read in files from other file systems
-  - Use an internal data frame as a data source
-  - Process data from sources that cannot be read natively by R Server
 
 ## Reading the Data
 
@@ -96,7 +89,7 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       - `colClasses` is an optional argument which can be used to define variable types
       - If we specify overwrite as TRUE, any existing data in the output file will be overwritten by the results from this process.
       - `append` is an optional argument, which can be used to append multiple files (`append = "rows"`).
-
+  - `stringsAsFactors` by default is set to true, automatically converting character variables to factors...
 `rxGetInfo` can be used to get some basic info about the data, including:
   - Min/Max values
   - Variable Types
@@ -226,13 +219,13 @@ Advantages/Disadvantages of XDF over CSV: </br>
 
 `rxDataStep` 
   - modify existing columns or add new columns to the data (using `transforms =` or `transformFunc =`)
-  - keep or drop certain columns from the data before writing to a new file
-  - keep or drop certain rows of the data before writing to a new file
+  - keep or drop certain columns from the data before writing to a new file `varsToDrop`, `varsToKeep`
+  - keep or drop certain rows of the data before writing to a new file. `rowSelection` argument can be used to limit number of observations like a `where` clause
   - syntax - `rxDataStep(inData, outFile, overwrite = FALSE)`
   - **Note: `outfile` is an optional argument: leaving it out will result in a** `data.frame`. 
   - `transforms` argument used to create simple transformations.
   - `transformFunc` assumes a function has already been defined outside `rxDataStep`, and can be used for more complicated transformations
-  
+
 All of the summary and analytics functions in `RevoScaleR` allow us to create new columns on-the-fly. **Note: This method does NOT write the column to the XDF. Because of the lower IO overhead, this is more efficient for a single run.**
 
 ** more info on `transformFunc`**
@@ -281,209 +274,85 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   4. BCD
   5. B
 
-# Chapter 3 - 
+# Chapter 3 - Examining and Visualizing the Data
 
-## Section 1.2 - Summarize data
-  - Compute crosstabs and univariate statistics
-  - Choose when to use **rxCrossTabs** versus **rxCube**
-  - Integrate with open source technologies by using packages such as dplyrXdf
-  - Use **group by** functionality
-  - Create complex formulas to perform multiple tasks in one pass through the data
-  - Extract quantiles by using **rxQuantile**
+## Examining the Data
+
+`rxSummary` Objects can be explored using `names(rxSummary(~., data))`
+  - `sDataFrame` - Dsiplays default output (Mean, Min, Max, StdDev, ValidObs, MissingObs)
+  - `nobs.missing`
+  - `nobs.valid`
+  - `categorical`
+  - `params`
+  - `formula`
+  - `call`
+  - `categorical.type`
   
-We already looked a little at `rxSummary`, but we can output the underlying data.  It is stored in an element called `sDataFrame` and can be very useful in extracting values when necessary.
+`rxCrossTabs` Get counts of frequencies for combinations of factor levels
+  - syntax `rxCrossTabs(formula, data, <options>)`
+  - `formula` is flexible and can allowed you to analyze:
+    - only one variable `~ x`
+    - two variables `~ x:y`
+    - or more... `~ x:y:z`
 
-```
-rxs_all <- rxSummary(~., nyc_xdf)
-head(rxs_all$sDataFrame)
-
-                   Name       Mean      StdDev           Min           Max ValidObs MissingObs
-1              VendorID         NA          NA            NA            NA 69406520          0
-2  tpep_pickup_datetime         NA          NA            NA            NA        0          0
-3 tpep_dropoff_datetime         NA          NA            NA            NA        0          0
-4       passenger_count   1.660674    1.310478        0.0000        9.0000 69406520          0
-5         trip_distance   4.850022 4044.503422 -3390583.8000 19072628.8000 69406520          0
-6      pickup_longitude -72.920469    8.763351     -165.0819      118.4089 69406520          0
-```
-
-Cross Tabulations are useful when we want to summarize by two variables
-
+`rxHistogram` Visual display of frequency distribution
+  - syntax `rxHistogram(formula, data, <options>)`
+  - can specify `startVal` and `endVal`
   
+## Quiz
+
+  1. Which three elements might contain the values resulted from the `rxCrossTabs()` function call?
+      + A. sums
+      + B. counts
+      + C. means
+      + D. median
+
+  2. What type of variables could be used in right-hand side (independent variables) on the formula arguments when using the `rxCrossTabs()` function?
+      + A. Numeric
+      + B. Character
+      + C. Logical
+      + D. Factor
+      
+  3. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf. Which of the following code will return a data.frame with a new variable HiLo that contains "High" when Temp is above 75 and "Low" otherwise?
+      + A. `rxDataStep("airquality.xdf", transforms = list(HiLo = ifelse(Temp>75,"High","Low")))`
+      + B. `rxDataStep("airquality.xdf", rowSelection = (Temp > 75 & Temp <= 75))`
+      + C. `rxDataStep("airquality.xdf", transformFunc = list(HiLo = ifelse(Temp>75,"High","Low")))`
+      + D. `rxDataStep("airquality.xdf", rowSelection = (HiLo == "High"), transforms = list(HiLo = ifelse(Temp>75,"High","Low")))`
+
+  4. You can set the `rowSelection` argument when using either `rxSummary()` or `rxDataStep()` function. What two considerations that you need to remember when setting this argument for these functions?
+      + A. The row selection is performed before processing any data transformations. 
+      + B. The row selection is performed after processing any data transformations.
+      + C. The logical expression assigned to the rowSelection argument can only be defined inside the function call.
+      + D. The logical expression assigned to the rowSelection can be defined outside of the function call using the expression function.
+      
+  5. Which two elements of the `rxSummary` object would tell you the number of missing observations in your data?
+      + A. `nobs.valid`
+      + B. `nobs.missing`
+      + C. `sDataFrame`
+      + D. `categorical`
+
+## Answers
+  1. ABC
+  2. D
+  3. A
+  4. BD
+  5. BC
   
-## Section 1.3 - Visualize data
-  - Visualize in-memory data with base plotting functions and ggplot2
-  - Create custom visualizations with **rxSummary** and **rxCube**
-  - Visualize data with **rxHistogram** and **rxLinePlot**, including faceted plots
-  
-# Chapter 2 - Process big data
+## Visualizing the Data
 
-## Section 2.1 - Process data with **rxDataStep**
-  - Subset rows of data, modify and create columns by using the **Transforms** argument
-  - Choose when to use on-the-fly transformations versus in-data transform trade-offs
-  - Handle missing values through filtering or replacement
-  - Generate a data frame or an XDF file
-  - Process dates (**POSIXct**, **POSIXlt**)
-  
+# Chapter 4 - Clustering and Modeling
 
-
-
-
-
-
-
-
-
-Functions Used:
-   - `rxGetInfo` - Shows variable types, as well as min/max values
-   - `rxDataStep` - Can be used to perform data manipulations
-   - `rxCrossTabs` - Performs Cross Tabulation
+## Clustering
    
-   
-   
-# Chapter 1 - Read and explore big data
 
-## Section 1.1 - Read Data with R Server
-  - Read supported data file formats, such as text files, SAS, and SPSS
-  - Convert data to XDF format
-  - Identify trade-offs between XDF and flat text files
-  - Read data through Open Database Connectivity (ODBC) data sources
-  - Read in files from other file systems
-  - Use an internal data frame as a data source
-  - Process data from sources that cannot be read natively by R Server
-   
-## Section 1.2 - Summarize data
-  - Compute crosstabs and univariate statistics
-  - Choose when to use **rxCrossTabs** versus **rxCube**
-  - Integrate with open source technologies by using packages such as dplyrXdf
-  - Use **group by** functionality
-  - Create complex formulas to perform multiple tasks in one pass through the data
-  - Extract quantiles by using **rxQuantile**
-  
-## Section 1.3 - Visualize data
-  - Visualize in-memory data with base plotting functions and ggplot2
-  - Create custom visualizations with **rxSummary** and **rxCube**
-  - Visualize data with **rxHistogram** and **rxLinePlot**, including faceted plots
-  
-# Chapter 2 - Process big data
-
-## Section 2.1 - Process data with **rxDataStep**
-  - Subset rows of data, modify and create columns by using the **Transforms** argument
-  - Choose when to use on-the-fly transformations versus in-data transform trade-offs
-  - Handle missing values through filtering or replacement
-  - Generate a data frame or an XDF file
-  - Process dates (**POSIXct**, **POSIXlt**)
-## Section 2.2 - Perform complex transforms that use transform functions
-  - Define a transform function
-  - Reshape data by using a transform function
-  - Use open source packages, such as lubridate
-  - Pass in values by using **transformVars** and **transformEnvir**
-  - Use internal **.rx** variables and functions for tasks, including cross-chunk communication
-
-## Section 2.3 - Manage data sets
-  - Sort data in various orders, such as ascending and descending
-  - Use **rxSort** deduplication to remove duplicate values
-  - Merge data sources using **rxMerge()**
-  - Merge options and types
-  - Identify when alternatives to **rxSort** and **rxMerge** should be used
-  
-## Section 2.4 - Process text using RML packages
-  - Create features using RML functions, such as **featurizeText()**
-  - Create indicator variables and arrays using RML functions, such as **categorical()** and **categoricalHash()**
-  - Perform feature selection using RML functions
-  
-# Chapter 3 - Build predictive models with ScaleR
-
-## Section 3.1 - Estimate linear models
-  - Use **rxLinMod**, **rxGlm**, and **rxLogit** to estimate linear models
-  - Set the family for a generalized linear model by using functions such as **rxTweedie**
-  - Process data on the fly by using the appropriate arguments and functions, such as the **F** function and **Transforms** argument
-  - Weight observations through frequency or probability weights
-  - Choose between different types of automatic variable selections, such as greedy searches, repeated scoring, and byproduct of training
-  - Identify the impact of missing values during automatic variable selection
-  
-## Section 3.2 - Build and use partitioning models
-  - Use **rxDTree**, **rxDForest**, and **rxBTrees** to build partitioning models
-  - Adjust the weighting of false positives and misses by using loss
-  - Select parameters that affect bias and variance, such as pruning, learning rate, and tree depth
-  - Use **as.rpart** to interact with open source ecosystems
-  
-## Section 3.3 - Generate predictions and residuals
-  - Use **rxPredict** to generate predictions
-  - Perform parallel scoring using **rxExec**
-  - Generate different types of predictions, such as link and response scores for GLM, response, prob, and vote for **rxDForest**
-  - Generate different types of residuals, such as Usual, Pearson, and DBM
-  
-## Section 3.4 - Evaluate models and tuning parameters
-  - Summarize estimated models
-  - Run arbitrary code out of process, such as parallel parameter tuning by using **rxExec**
-  - Evaluate tree models by using **RevoTreeView** and **rxVarImpPlot**
-  - Calculate model evaluation metrics by using built-in functions
-  - Calculate model evaluation metrics and visualizations by using custom code, such as mean absolute percentage error and precision recall curves
-  
-## Section 3.5 - Create additional models using RML packages
-  - Build and use a One-Class Support Vector Machine
-  - Build and use linear and logistic regressions that use L1 and L2 regularization
-  - Build and use a decision tree by using FastTree
-  - Use FastTree as a recommender with ranking loss (NDCG)
-  - Build and use a simple three-layer feed-forward neural network
-  
-# Chapter 4 - Use R Server in different environments
-
-## Section 4.1 - Use different compute contexts to run R Server effectively
-  - Change the compute context (**rxHadoopMR**, **rxSpark**, **rxLocalseq**, and **rxLocalParallel**)
-  - Identify which compute context to use for different tasks
-  - Use different data source objects, depending on the context (**RxOdbcData** and **RxTextData**)
-  - Identify and use appropriate data sources for different data sources and compute contexts (HDFS and SQL Server)
-  - Debug processes across different compute contexts
-  - Identify use cases for **RevoPemaR**
-
-## Section 4.2 - Optimize tasks by using local compute contexts
-  - Identify and execute tasks that can be run only in the local compute context
-  - Identify tasks that are more efficient to run in the local compute context
-  - Choose between **rxLocalseq** and **rxLocalParallel**
-  - Profile across different compute contexts
-  
-## Section 4.3 - Perform in-database analytics by using SQL Server
-  - Choose when to perform in-database versus out-of-database computations
-  - Identify limitations of in-database computations
-  - Use in-database versus out-of-database compute contexts appropriately
-  - Use stored procedures for data processing steps
-  - Serialize objects and write back to binary fields in a table
-  - Write tables
-  - Configure R to optimize SQL Server (**chunksize**, **numtasks**, and **computecontext**)
-  - Effectively communicate performance properties to SQL administrators and architects (SQL Server Profiler)  
-  
-  
-Write tables back to database
-
-```
-myTable <- RxOdbcData(table="mtcars", connectionString = connectionString)
-rxDataStep(mtcars, myTable, overwrite=TRUE) 
-head(myTable) 
-rxGetInfo(myTable, getVarInfo=TRUE) 
-myCars <- rxDataStep(myTable) 
-head(myCars)
-```
-
-## Section 4.4 - Implement analysis workflows in the Hadoop ecosystem and Spark
-  - Use appropriate R Server functions in Spark; integrate with Hive, Pig, and Hadoop MapReduce
-  - Integrate with the Spark ecosystem of tools, such as SparklyR and SparkR
-  - Profile and tune across different compute contexts
-  - Use **doRSR** for parallelizing code that was written using open source **foreach**
-  
-## Section 4.5 - Deploy predictive models to SQL Server and Azure Machine Learning
-  - Deploy predictive models to SQL Server as a stored procedure
-  - Deploy an arbitrary function to Azure Machine Learning by using the AzureML R package
-  - Identify when to use DeployR
 
 
 ## General Resources <a name="general-resources"></a>
 
 * [Learn Analytics @ Microsoft](http://learnanalytics.microsoft.com/)
-
+edx
+datacamp
+Microsoft R Documentation(https://msdn.microsoft.com/en-us/microsoft-r/index)
       
-## Glossary <a name="glossary"></a>
 
-rxCrossTabs - blah blah blah
-rxImport
 
