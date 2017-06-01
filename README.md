@@ -1,13 +1,22 @@
 # Microsoft-70-773-ExamPrep
-Study Guide for Microsoft 70-773
+Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info)
 
 ## Table of Contents
 
 - [General Resources](#general-resources)
-- [Glossary](#glossary)
-- [Analytics Life Cycle](#analytics-life)
 
-# Chapter 1 Introduction
+# Chapter 1 - Introduction
+
+`package` - Collection of functions, data, and compiled code.
+
+`data.frame` - R uses a data type called a `data.frame`, which must be loaded in memory.  This can be very limiting, especially as data sets get very large.
+
+`RevoScaleR`
+  - escapes R's traditional memory limitations
+  - Scales predictive modeling using parallelization
+  - Distributes computation cores & nodes
+  - Minimizes data movement using in-database, in-Hadoop, and in-Spark execution
+  - Loads data a **chunk** at a time onto disk (500k default)
 
 ## Analytics Life Cycle
   - Preparation
@@ -21,7 +30,59 @@ Study Guide for Microsoft 70-773
     - Score
     - Visualize
     - Measure
-    
+
+`rxImport` - Used to import various file types into R
+  - syntax 
+
+`rxOptions` - Functions to specify and retrieve options needed for `RevoScaleR` computations. These need to be set only once to carry out multiple computations.
+  - `reportProgress` default value to use for reportProgress argument for many RevoScaleR functions. Options are:
+      - 0: no progress is reported. 
+      - 1: the number of processed rows is printed and updated.
+      - 2: rows processed and timings are reported.
+      - 3: rows processed and all timings are reported.
+  - `traceLevel` - useful in debugging
+
+## Quiz
+
+  1. In the advanced analytics lifecyle, what would you typically start with?
+      + A. Transform the data
+      + B. Explore the data
+      + C. Ingest the data 
+      + D. Model the data
+  
+  2. Which code would you use to set `RevoScaleR` options to report only the number of processed rows?
+      + A. `rxOptions(reportProgress = 0)`
+      + B. `rxOptions(reportProgress = 1)`
+      + C. `rxOptions(reportProgress = 2)`
+      + D. `rxOptions(reportProgress = 3)`
+
+  3. Which three statement explains how `RevoScaleR` mitigates R limitation working with data that is larger than the local computer's memory?
+      + A. `RevoScaleR` points to the data that sits on the disk
+      + B. `RevoScaleR` loads the data into memory a chunk at a time
+      + C. `RevoScaleR` waits until all the data is loaded into memory
+      + D. `RevoScaleR` processes the loaded data one chunk at a time
+      
+  4. Which three steps are part of the preparation phase in the advanced analytics lifecycle?
+      + A. Ingest
+      + B. Transform
+      + C. Explore
+      + D. Model
+  
+  5. Which two development environments with R console can you use when working with Microsoft R?
+      + A. Visual Studio
+      + B. SQL Server Management Studio
+      + C. RStudio
+      + D. Microsoft Word
+
+## Answers
+  1. C
+  2. B
+  3. ABD
+  4. ABC
+  5. AC
+  
+
+
 # Chapter 2 Reading and Preparing Data
   - Read supported data file formats, such as text files, SAS, and SPSS
   - Convert data to XDF format
@@ -31,53 +92,12 @@ Study Guide for Microsoft 70-773
   - Use an internal data frame as a data source
   - Process data from sources that cannot be read natively by R Server
   
-R uses a data type called a `data.frame`, which must be loaded in memory.  This can be very limiting, especially as data sets get very large.
 
-## RevoScaleR package:
-  - escapes R's traditional memory limitations
-  - Scales predictive modeling using parallelization
-  - Distributes computation cores & nodes
-  - Minimizes data movement using in-database, in-Hadoop, and in-Spark execution
-  - Loads data a chunk at a time onto disk (500k default)
 
-## Read CSV
-```{r}
-# Designating column classes
-col_classes <- c('VendorID' = "factor",
-                 'tpep_pickup_datetime' = "character",
-                 'tpep_dropoff_datetime' = "character",
-                 'passenger_count' = "integer",
-                 'trip_distance' = "numeric",
-                 'pickup_longitude' = "numeric",
-                 'pickup_latitude' = "numeric",
-                 'RateCodeID' = "factor",
-                 'store_and_fwd_flag' = "factor",
-                 'dropoff_longitude' = "numeric",
-                 'dropoff_latitude' = "numeric",
-                 'payment_type' = "factor",
-                 'fare_amount' = "numeric",
-                 'extra' = "numeric",
-                 'mta_tax' = "numeric",
-                 'tip_amount' = "numeric",
-                 'tolls_amount' = "numeric",
-                 'improvement_surcharge' = "numeric",
-                 'total_amount' = "numeric")
 
-# Import first 1000 rows
-nyc_sample_df <- read.csv('C:/yellow_tripdata_2016-01.csv', nrows = 1000, colClasses = col_classes)
-# View first 10 rows
-head(nyc_sample_df)
 
-```
 
-## Read SAS into XDF
 
-```
-inFileSAS <- file.path(rxGetOption("sampleDataDir"), "claims.sas7bdat")
-xdfFileSAS <- "claimsSAS.xdf"
-claimsSAS <- rxImport(inData = inFileSAS, outFile = xdfFileSAS)
-rxGetInfo(claimsSAS, getVarInfo=TRUE)
-```
 Sometimes, SAS data files on Windows come in two pieces, a `.sasb7dat` file containing the data and a `.sasb7cat` file containing label information.  In this case, the below procedure is used.
 
 ```
