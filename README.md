@@ -31,9 +31,6 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
     - Visualize
     - Measure
 
-`rxImport` - Used to import various file types into R
-  - syntax 
-
 `rxOptions` - Functions to specify and retrieve options needed for `RevoScaleR` computations. These need to be set only once to carry out multiple computations.
   - `reportProgress` default value to use for reportProgress argument for many RevoScaleR functions. Options are:
       - 0: no progress is reported. 
@@ -75,15 +72,14 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       + D. Microsoft Word
 
 ## Answers
+
   1. C
   2. B
   3. ABD
   4. ABC
   5. AC
   
-
-
-# Chapter 2 Reading and Preparing Data
+# Chapter 2 - Reading and Preparing Data
   - Read supported data file formats, such as text files, SAS, and SPSS
   - Convert data to XDF format
   - Identify trade-offs between XDF and flat text files
@@ -91,33 +87,79 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   - Read in files from other file systems
   - Use an internal data frame as a data source
   - Process data from sources that cannot be read natively by R Server
+
+## Reading the Data
+
+`rxImport` - Used to import various file types into XDF format
+  - returns either list or data.frame
+  - syntax `rxImport(inData, outFile, colClasses = NULL, overwrite = FALSE, append = "none")`
+      - `colClasses` is an optional argument which can be used to define variable types
+      - If we specify overwrite as TRUE, any existing data in the output file will be overwritten by the results from this process.
+      - `append` is an optional argument, which can be used to append multiple files (`append = "rows"`).
+
+`rxGetInfo` can be used to get some basic info about the data, including:
+  - Min/Max values
+  - Variable Types
+  - `numRows` option can provide a quick view
+
+`RxXdfData` - Creates pointer to an XDF file 
+
+`RxTextData` - Creates pointer to a CSV file
+
+`rxSummary` - Summarizes variables
+  - syntax `rxSummary(formula, data, <options>)`
+    - `formula` is initiated with '~' and used to specify which variables to summarize, separated by '+' (eg `~ x+ y + z`, `~.` for all)
+  - By default, provides:
+    - Mean
+    - Standard Deviation
+    - Min
+    - Max
+    - ValidObs
+    - MissingObs
   
+   
+**Creating Pointers to Files**
+```
+# CSV Pointer
 
+input_csv <- 'examplefile.csv' 
+pointer_csv <- RxTextData(input_csv, colClasses = col_classes) 
 
+# XDF pointer
 
-
-
-
-Sometimes, SAS data files on Windows come in two pieces, a `.sasb7dat` file containing the data and a `.sasb7cat` file containing label information.  In this case, the below procedure is used.
+input_xdf <- 'examplefile.xdf'
+pointer_xdf <- RxXdfData(input_xdf)
 
 ```
+
+**Importing Different File Types**
+```
+# Read CSV into XDF
+
+rxImport(input_csv, input_xdf, colClasses = col_classes, overwrite = TRUE, append = append)
+
+# Read SAS into XDF
+
+inFileSAS <- file.path(rxGetOption("sampleDataDir"), "claims.sas7bdat")
+xdfFileSAS <- "claimsSAS.xdf"
+claimsSAS <- rxImport(inData = inFileSAS, outFile = xdfFileSAS)
+rxGetInfo(claimsSAS, getVarInfo=TRUE)
+
+# Sometimes, SAS data files on Windows come in two pieces, a .sasb7dat file containing the data and a .sasb7cat file containing label information.  In this case, the below procedure is used.
+
 myData <- rxImport(inData = "myfile.sas7bdat",
      outFile ="myfile.xdf",
      formatFile = "myfile.sas7bcat")
-```
 
-## Read SPSS into XDF
+# Read SPSS into XDF
 
-```
 inFileSpss <- file.path(rxGetOption("sampleDataDir"), "claims.sav")
 xdfFileSpss <- "claimsSpss.xdf"
 claimsSpss <- rxImport(inData = inFileSpss, outFile = xdfFileSpss)
 rxGetInfo(claimsSpss, getVarInfo=TRUE)
-```
 
-## Read data from ODBC Source
+# Read data from ODBC Source
 
-```
 sConnectionStr <- "Driver={SQL Server};Server=win-database01; 
         Database=TestData;Uid=mktest;Pwd=sqlpwd;"
     claimsSQL = "SELECT * FROM claims"
@@ -141,396 +183,105 @@ Advantages/Disadvantages of XDF over CSV: </br>
    1. Only recognized by MRS.
    2. Runtime cost associated with conversion to XDF (though quickly offset by the reduced runtime of working with XDF file)
    
-```{r}
+## Quiz
 
-# Import first 6 months of 2016 Yellow Taxi Data into XDF
-
-input_xdf <- 'yellow_tripdata_2016.xdf'
-library(lubridate)
-most_recent_date <- ymd("2016-07-01") # the day of the months is irrelevant
-
-st <- Sys.time()
-for (ii in 1:6) {
-    # get each month's data and append it to the first month's data
-    file_date <- most_recent_date - months(ii)
-    input_csv <- sprintf('C:/yellow_tripdata_%s.csv', substr(file_date, 1, 7))
-    append <- if (ii == 1) "none" else "rows"
-    rxImport(input_csv, input_xdf, colClasses = col_classes, overwrite = TRUE, append = append)
-    print(input_csv)
-}
-Sys.time() - st # stores the time it took to import
-```
-As you can see below, it took about 17 minutes to load these six CSV files (~2 GB each) into an XDF
-```
-Rows Processed: 10906858
-[1] "yellow_tripdata_2016-01.csv"
-Rows Processed: 11382049 
-[1] "yellow_tripdata_2016-02.csv"
-Rows Processed: 12210952 
-[1] "yellow_tripdata_2016-03.csv"
-Rows Processed: 11934338 
-[1] "yellow_tripdata_2016-04.csv"
-Rows Processed: 11836853 
-[1] "yellow_tripdata_2016-05.csv"
-Rows Processed: 11135470 
-[1] "yellow_tripdata_2016-06.csv"
-
-Time difference of 16.90247 mins
-```
-Now that we have the data loaded into an XDF, let's benchmark performance by performing a summary on both data forms.
-
-```{r}
-
-nyc_xdf <- RxXdfData(input_xdf)
-system.time(
-rxsum_xdf <- rxSummary(~fare_amount, nyc_xdf) # provide statistical summaries for fare amount
-)
-rxsum_xdf
-
-Rows Processed: 69406520         
-   user  system elapsed 
-   0.02    0.00    1.98 
-Call:
-rxSummary(formula = ~fare_amount, data = nyc_xdf)
-
-Summary Statistics Results for: ~fare_amount
-Data: nyc_xdf (RxXdfData Data Source)
-File name: yellow_tripdata_2016.xdf
-Number of valid observations: 69406520 
- 
- Name        Mean     StdDev   Min    Max      ValidObs MissingObs
- fare_amount 12.91626 128.1172 -957.6 628544.7 69406520 0      
-
-```
-
-Summary of XDF (six months of data) took about two seconds.
-
-```
-
-input_csv <- 'C:/Users/npylypiw/Documents/Training/Microsoft 70-773/Taxi Data/yellow_tripdata_2016-01.csv ' # we can only use one month's data unless we join the CSVs
-nyc_csv <- RxTextData(input_csv, colClasses = col_classes) # point to CSV file and provide column info
-system.time(
-  rxsum_csv <- rxSummary(~fare_amount, nyc_csv) # provide statistical summaries for fare amount
-)
-rxsum_csv
-
-   
-Rows Processed: 10906858         
-   user  system elapsed 
-   0.03    0.00   36.70 
-Call:
-rxSummary(formula = ~fare_amount, data = nyc_csv)
-
-Summary Statistics Results for: ~fare_amount
-Data: nyc_csv (RxTextData Data Source)
-File name: C:/yellow_tripdata_2016-01.csv
-Number of valid observations: 10906858 
- 
- Name        Mean     StdDev Min    Max      ValidObs MissingObs
- fare_amount 12.48693 35.564 -957.6 111270.9 10906858 0  
- 
- ```
-
-The same procedure on a much smaller CSV (one month) took 37 seconds.
-
-`rxGetInfo` can be used to get some basic info about the data, including:
-  - Min/Max values
-  - Variable Types
-  - `numRows` option can provide a quick view
+  1. Which two possible R data type can be returned by the `rxImport()` function?
+      + A. vector
+      + B. List
+      + C. data.frame
+      + D. factor
+      
+  2. Consider the rxSummary() function. Which notation should you use for the formula argument to summarize the column trip_duration?
+      + A. `+ trip_duration`
+      + B. `? trip_duration`
+      + C. `= trip_duration`
+      + D. `~ trip_duration`
+      
+  3. Consider the `rxSummary()` function. The data argument is used to specify the data to summarize. What three types of data can be used with the data argument?
+      + A. A data.frame object
+      + B. A data source object, such as the one created using RxTextData() function
+      + C. A character string specifying an XDF file
+      + D. A database backup file
+      
+  4. Consider the `rxImport()` function. Which argument performs similar function to the argument nrows in the `read.csv()` function?
+      + A. `varsToKeep`
+      + B. `varsToDrop`
+      + C. `rowSelection`
+      + D. `numRows`
+      
+  5. What is the main advantage of an XDF file over a data.frame?
+      + A. An XDF file can contain data larger than the local computer's memory size
+      + B. You can use open source R functions directly with an XDF file
+      + C. Computation using an XDF file is faster than using data.frame incorrect
+      + D. An XDF file is compressed such that it fits to the local computer's memory size
+      
+## Answers 
+  1. BC
+  2. D
+  3. ABC
+  4. D
+  5. 
   
-```
-rxGetInfo(nyc_xdf, getVarInfo = TRUE, numRows = 5)
+## Preparing the Data
 
-File name: C:\yellow_tripdata_2016.xdf 
-Number of observations: 69406520 
-Number of variables: 19 
-Number of blocks: 6 
-Compression type: zlib 
-Variable information: 
-Var 1: VendorID
-       2 factor levels: 2 1
-Var 2: tpep_pickup_datetime, Type: character
-Var 3: tpep_dropoff_datetime, Type: character
-Var 4: passenger_count, Type: integer, Low/High: (0, 9)
-Var 5: trip_distance, Type: numeric, Low/High: (-3390583.8000, 19072628.8000)
-Var 6: pickup_longitude, Type: numeric, Low/High: (-165.0819, 118.4089)
-Var 7: pickup_latitude, Type: numeric, Low/High: (-77.0395, 66.8568)
-Var 8: RatecodeID, Type: integer, Low/High: (1, 99)
-Var 9: store_and_fwd_flag
-       2 factor levels: N Y
-Var 10: dropoff_longitude, Type: numeric, Low/High: (-161.6987, 106.2469)
-Var 11: dropoff_latitude, Type: numeric, Low/High: (-77.0395, 405.3167)
-Var 12: payment_type
-       5 factor levels: 2 1 3 4 5
-Var 13: fare_amount, Type: numeric, Low/High: (-957.6000, 628544.7400)
-Var 14: extra, Type: numeric, Low/High: (-58.5000, 648.8700)
-Var 15: mta_tax, Type: numeric, Low/High: (-2.7000, 89.7000)
-Var 16: tip_amount, Type: numeric, Low/High: (-220.8000, 998.1400)
-Var 17: tolls_amount, Type: numeric, Low/High: (-99.9900, 1410.3200)
-Var 18: improvement_surcharge, Type: numeric, Low/High: (-0.3000, 11.6400)
-Var 19: total_amount, Type: numeric, Low/High: (-958.4000, 629033.7800)
-Data (5 rows starting with row 1):
-  VendorID tpep_pickup_datetime tpep_dropoff_datetime passenger_count trip_distance pickup_longitude pickup_latitude RatecodeID store_and_fwd_flag
-1        2  2016-06-09 21:06:36   2016-06-09 21:13:08               2          0.79        -73.98336        40.76094          1                  N
-2        2  2016-06-09 21:06:36   2016-06-09 21:35:11               1          5.22        -73.98172        40.73667          1                  N
-3        2  2016-06-09 21:06:36   2016-06-09 21:13:10               1          1.26        -73.99432        40.75107          1                  N
-4        2  2016-06-09 21:06:36   2016-06-09 21:36:10               1          7.39        -73.98236        40.77389          1                  N
-5        2  2016-06-09 21:06:36   2016-06-09 21:23:23               1          3.10        -73.98711        40.73317          1                  N
-  dropoff_longitude dropoff_latitude payment_type fare_amount extra mta_tax tip_amount tolls_amount improvement_surcharge total_amount
-1         -73.97746         40.75398            2         6.0   0.5     0.5       0.00            0                   0.3         7.30
-2         -73.98164         40.67024            1        22.0   0.5     0.5       4.00            0                   0.3        27.30
-3         -74.00423         40.74217            1         6.5   0.5     0.5       1.56            0                   0.3         9.36
-4         -73.92947         40.85154            1        26.0   0.5     0.5       1.00            0                   0.3        28.30
-5         -73.98591         40.76645            1        13.5   0.5     0.5       2.96            0                   0.3        17.76
-```
-## Create Column with rxDataStep
-
-`rxDataStep` can be used to:
-  - modify existing columns or add new columns to the data
+`rxDataStep` 
+  - modify existing columns or add new columns to the data (using `transforms =` or `transformFunc =`)
   - keep or drop certain columns from the data before writing to a new file
   - keep or drop certain rows of the data before writing to a new file
+  - syntax - `rxDataStep(inData, outFile, overwrite = FALSE)`
+  - **Note: `outfile` is an optional argument: leaving it out will result in a** `data.frame`. 
+  - `transforms` argument used to create simple transformations.
+  - `transformFunc` assumes a function has already been defined outside `rxDataStep`, and can be used for more complicated transformations
+  
+All of the summary and analytics functions in `RevoScaleR` allow us to create new columns on-the-fly. **Note: This method does NOT write the column to the XDF. Because of the lower IO overhead, this is more efficient for a single run.**
 
-**Note: `outfile` is an optional argument: leaving it out will result in a** `data.frame`. 
+** more info on `transformFunc`**
 
-Here we can use `rxDataStep` to create a tip percentage calculated column.
-```
-rxDataStep(nyc_xdf, nyc_xdf, 
-           transforms = list(tip_percent = ifelse(fare_amount > 0 & tip_amount < fare_amount, round(tip_amount*100 / fare_amount, 0), NA)),
-           overwrite = TRUE)
-rxSummary( ~ tip_percent, nyc_xdf)
-```
+## Quiz
 
-All of the summary and analytics functions in `RevoScaleR` allow us to create new columns on-the-fly like below. **Note: This method does NOT write the column to the XDF. Because of the lower IO overhead, this is more efficient for a single run.**
+  1. Consider the `rxGetInfo()` function. Which argument performs similar function to the argument `n` in the `head()` function?
+      + A. startRow
+      + B. numRows 
+      + C. varsToDrop
+      + D. varsToKeep
+      
+  2. Which Microsoft R function would you use to transform data from an input data set to an output data set?
+      + A. `rxImport()`
+      + B. `rxSummary()`
+      + C. `rxGetInfor()`
+      + D. `rxDataStep()`
+      
+  3. You have the following code:
+  
+  ```
+  file_1 <- 'data.csv'
+  file_2 <- 'data.xdf
+  data_csv <- RxTextData(file_1, colClasses = col_classes)
+  data_df <- rxImport(data_csv)
+  rxImport(file_1, file_2, colClasses = col_classes, overwrite = TRUE)
+  ```    
+  
+     You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closes result for `data.xdf` using `rxGetInfo()` function?
 
-```
-rxSummary( ~ tip_percent2, nyc_xdf, 
-  transforms = list(tip_percent2 = ifelse(fare_amount > 0 & tip_amount < fare_amount, round(tip_amount * 100 / fare_amount, 0), NA)))
-
-```
-Suppose we want to view counts by month, but do not necessarily need these columns written to the XDF.  We can use `rxCrossTabs` to create the transformed columns AND produce the Cross Tabulation.
-
-```
-rxCrossTabs( ~ month:year, nyc_xdf, 
-             transforms = list(
-               date = ymd_hms(tpep_pickup_datetime), 
-               year = factor(year(date), levels = 2014:2016), 
-               month = factor(month(date), levels = 1:12)), 
-             transformPackages = "lubridate")
-             
-```
-The output for this procedure is below.
-```
-Rows Processed: 69406520         
-Call:
-rxCrossTabs(formula = ~month:year, data = nyc_xdf, transforms = list(date = ymd_hms(tpep_pickup_datetime), 
-    year = factor(year(date), levels = 2014:2016), month = factor(month(date), 
-        levels = 1:12)), transformPackages = "lubridate")
-
-Cross Tabulation Results for: ~month:year
-Data: nyc_xdf (RxXdfData Data Source)
-File name: yellow_tripdata_2016.xdf
-Number of valid observations: 69406520
-Number of missing observations: 0 
-Statistic: counts 
+  + A. `rxGetInfo(file_2)`
+  + B. `rxGetInfo(file_2, numRows = 6)`
+  + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
+  + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
+  
+  5. Consider the `rxDataStep()` function. Which three of the following assignments are valid for the `transformPackages` argument?
+      + A. `transformPackages = list("stringr", "lubridate")`
+      + B. `transformPackages = c("stringr","lubridate")`
+      + C. `transformPackages = "lubridate"`
+      + D. `transformPackages = c("stringr")`
  
-month:year (counts):
-     year
-month 2014 2015     2016
-   1     0    0 10906858
-   2     0    0 11382049
-   3     0    0 12210952
-   4     0    0 11934338
-   5     0    0 11836853
-   6     0    0 11135470
-   7     0    0        0
-   8     0    0        0
-   9     0    0        0
-   10    0    0        0
-   11    0    0        0
-   12    0    0        0
-```
+## Answers
+  1. B
+  2. D
+  3. C
+  4. BCD
+  5. B
 
-## Complex Transformations
-
-The above examples are relatively simple transformations, but there is a more efficient way to do complex or multiple transformations is to create a custom function and pass it to the `transformFunc` argument.
-
-```
-xforms <- function(data) { # transformation function for extracting some date and time features
-
-  weekday_labels <- c('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
-  cut_levels <- c(1, 5, 9, 12, 16, 18, 22)
-  hour_labels <- c('1AM-5AM', '5AM-9AM', '9AM-12PM', '12PM-4PM', '4PM-6PM', '6PM-10PM', '10PM-1AM')
-
-  pickup_datetime <- ymd_hms(data$tpep_pickup_datetime, tz = "UTC")
-  pickup_hour <- addNA(cut(hour(pickup_datetime), cut_levels))
-  pickup_dow <- factor(wday(pickup_datetime), levels = 1:7, labels = weekday_labels)
-  levels(pickup_hour) <- hour_labels
-
-  dropoff_datetime <- ymd_hms(data$tpep_dropoff_datetime, tz = "UTC")
-  dropoff_hour <- addNA(cut(hour(dropoff_datetime), cut_levels))
-  dropoff_dow <- factor(wday(dropoff_datetime), levels = 1:7, labels = weekday_labels)
-  levels(dropoff_hour) <- hour_labels
-
-  data$pickup_hour <- pickup_hour
-  data$pickup_dow <- pickup_dow
-  data$dropoff_hour <- dropoff_hour
-  data$dropoff_dow <- dropoff_dow
-  data$trip_duration <- as.integer(as.duration(dropoff_datetime - pickup_datetime))
-
-  data
-}
-```
-
-Let's test our custom function on the sample data.
-
-```
-library(lubridate)
-Sys.setenv(TZ = "US/Eastern") # not important for this dataset
-head(xforms(nyc_sample_df)) # test the function on a data.frame
-```
-Here we can see that the five new columns have been added to the data.frame, and appear to be working correctly.
-
-```
- VendorID tpep_pickup_datetime tpep_dropoff_datetime passenger_count trip_distance pickup_longitude pickup_latitude RatecodeID store_and_fwd_flag
-1        2  2016-06-09 21:06:36   2016-06-09 21:13:08               2          0.79        -73.98336        40.76094          1                  N
-2        2  2016-06-09 21:06:36   2016-06-09 21:35:11               1          5.22        -73.98172        40.73667          1                  N
-3        2  2016-06-09 21:06:36   2016-06-09 21:13:10               1          1.26        -73.99432        40.75107          1                  N
-4        2  2016-06-09 21:06:36   2016-06-09 21:36:10               1          7.39        -73.98236        40.77389          1                  N
-5        2  2016-06-09 21:06:36   2016-06-09 21:23:23               1          3.10        -73.98711        40.73317          1                  N
-6        2  2016-06-09 21:06:36   2016-06-09 21:19:21               1          2.17        -73.99520        40.73949          1                  N
-  dropoff_longitude dropoff_latitude payment_type fare_amount extra mta_tax tip_amount tolls_amount improvement_surcharge total_amount pickup_hour
-1         -73.97746         40.75398            2         6.0   0.5     0.5       0.00            0                   0.3         7.30    6PM-10PM
-2         -73.98164         40.67024            1        22.0   0.5     0.5       4.00            0                   0.3        27.30    6PM-10PM
-3         -74.00423         40.74217            1         6.5   0.5     0.5       1.56            0                   0.3         9.36    6PM-10PM
-4         -73.92947         40.85154            1        26.0   0.5     0.5       1.00            0                   0.3        28.30    6PM-10PM
-5         -73.98591         40.76645            1        13.5   0.5     0.5       2.96            0                   0.3        17.76    6PM-10PM
-6         -73.99320         40.76264            1        10.5   0.5     0.5       2.36            0                   0.3        14.16    6PM-10PM
-  pickup_dow dropoff_hour dropoff_dow trip_duration
-1        Thu     6PM-10PM         Thu           392
-2        Thu     6PM-10PM         Thu          1715
-3        Thu     6PM-10PM         Thu           394
-4        Thu     6PM-10PM         Thu          1774
-5        Thu     6PM-10PM         Thu          1007
-6        Thu     6PM-10PM         Thu           765
-```
-
-Now we are ready to execute the function on the XDF.
-
-```
-st <- Sys.time()
-rxDataStep(nyc_xdf, nyc_xdf, overwrite = TRUE, transformFunc = xforms, transformPackages = "lubridate")
-Sys.time() - st
-```
-
-Examining the new columns to see if we got desired results.  Let's look at a quick `rxSummary`
-
-```
-rxs1 <- rxSummary( ~ pickup_hour + pickup_dow + trip_duration, nyc_xdf)
-# we can add a column for proportions next to the counts
-rxs1$categorical <- lapply(rxs1$categorical, function(x) cbind(x, prop = round(prop.table(x$Counts), 2)))
-rxs1
-```
-Summary Output is below
-```
-Rows Processed: 69406520         
-Call:
-rxSummary(formula = ~pickup_hour + pickup_dow + trip_duration, 
-    data = nyc_xdf)
-
-Summary Statistics Results for: ~pickup_hour + pickup_dow + trip_duration
-Data: nyc_xdf (RxXdfData Data Source)
-File name: yellow_tripdata_2016.xdf
-Number of valid observations: 69406520 
- 
- Name          Mean     StdDev   Min        Max      ValidObs MissingObs
- trip_duration 933.9168 119243.5 -631148790 11538803 69406520 0         
-
-Category Counts for pickup_hour
-Number of categories: 7
-Number of valid observations: 69406520
-Number of missing observations: 0
-
- pickup_hour Counts   prop
- 1AM-5AM      3801430 0.05
- 5AM-9AM     10630653 0.15
- 9AM-12PM     9765429 0.14
- 12PM-4PM    13473045 0.19
- 4PM-6PM      7946899 0.11
- 6PM-10PM    16138968 0.23
- 10PM-1AM     7650096 0.11
-
-Category Counts for pickup_dow
-Number of categories: 7
-Number of valid observations: 69406520
-Number of missing observations: 0
-
- pickup_dow Counts   prop
- Sun         9267881 0.13
- Mon         8938785 0.13
- Tue         9667525 0.14
- Wed         9982769 0.14
- Thu        10398738 0.15
- Fri        10655022 0.15
- Sat        10495800 0.15
- ```
-Separating two variables by a colon (`pickup_dow:pickup_hour`) instead of a plus sign (`pickup_dow + pickup_hour`) allows us to get summaries for each combination of the levels of the two factor columns, instead of individual ones.
- 
- ```
- rxs2 <- rxSummary( ~ pickup_dow:pickup_hour, nyc_xdf)
-rxs2 <- tidyr::spread(rxs2$categorical[[1]], key = 'pickup_hour', value = 'Counts')
-row.names(rxs2) <- rxs2[ , 1]
-rxs2 <- as.matrix(rxs2[ , -1])
-rxs2
-```
-```
-Rows Processed: 69406520         
-    1AM-5AM 5AM-9AM 9AM-12PM 12PM-4PM 4PM-6PM 6PM-10PM 10PM-1AM
-Sun 1040233  740157  1396409  1980752 1032434  1697529  1380367
-Mon  304474 1630951  1268326  1838143 1133728  2096219   666944
-Tue  278407 1840134  1382381  1882356 1151837  2390506   741904
-Wed  313809 1854757  1417953  1880896 1142071  2508618   864665
-Thu  354646 1871828  1428985  1922502 1165535  2634023  1021219
-Fri  553159 1766482  1406979  1922542 1173163  2516285  1316412
-Sat  956702  926344  1464396  2045854 1148131  2295788  1658585
-```
-
-A `levelplot` may be helpful to view these results in a more meaningful way.
-
-```
-levelplot(prop.table(rxs2, 2), cuts = 4, xlab = "", ylab = "", main = "Distribution of taxis by day of week")
-```
-
-# PICTURE
-```
-library(rgeos)
-library(maptools)
-
-nyc_shapefile <- readShapePoly('ZillowNeighborhoods-NY/ZillowNeighborhoods-NY.shp')
-mht_shapefile <- subset(nyc_shapefile, str_detect(CITY, 'New York City-Manhattan'))
-
-mht_shapefile@data$id <- as.character(mht_shapefile@data$NAME)
-mht.points <- fortify(gBuffer(mht_shapefile, byid = TRUE, width = 0), region = "NAME")
-mht.df <- inner_join(mht.points, mht_shapefile@data, by = "id")
-
-library(dplyr)
-mht.cent <- mht.df %>%
-  group_by(id) %>%
-  summarize(long = median(long), lat = median(lat))
-
-library(ggrepel)
-ggplot(mht.df, aes(long, lat, fill = id)) + 
-  geom_polygon() +
-  geom_path(color = "white") +
-  coord_equal() +
-  theme(legend.position = "none") +
-  geom_text_repel(aes(label = id), data = mht.cent, size = 3)
-```
-Functions Used:
-   - `RxXdfData` - Creates pointer to an XDF file 
-   - `RxTextData` - Creates pointer to a CSV file
-   - `rxSummary` - Summarizes variables
-   - `rxImport` - Flexible function used to import various data types into R Server. Returns either `list` or `data.frame`
-   - `rxOptions` - Used to alter option shown.  (reportProgress = 1) shows only number of processed rows
+# Chapter 3 - 
 
 ## Section 1.2 - Summarize data
   - Compute crosstabs and univariate statistics
