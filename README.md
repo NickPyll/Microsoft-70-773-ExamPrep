@@ -451,14 +451,136 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
   - `rxLinMod(formula, data, <options>)`
   - Lots of output available including `r.squared`, `f.pvalue`, `coef.p.value`
 
+`rxDTree`
+
+`rxDForest`
+
 `rxSplit`
 
+`rxCor`
+
 `rxPredict`
+  - input can be XDF, data.frame, or character string representing XDF
+  - `computeResiduals = TRUE` is used to get residual values
 
 `rxQuantile`
   - `rxQuantile("varName", data, probs = seq(0, 1, 0.25))`
 
+## Quiz
 
+  1. Consider the airquality dataset, which is part of Base R datasets. You have the following code:
+
+```
+    z <- airquality[,c("Wind","Temp")] 
+    cl <- kmeans(z, 2) 
+    cl$cluster
+```   
+  Which of the following code will produce similar result using the `rxKmeans()` function?
+     + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
+     + B. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
+     + C. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
+     + D. `cl <- rxKmeans(~Wind+Temp,data=z,maxIterations=2)`
+     
+  2. Which three arguments are mandatory when using the rxKmeans() function?
+     + A. either centers or numClusters
+     + B. formula
+     + C. data
+     + D. maxIterations
+
+  3. Consider the father.son dataset from the UsingR package. You can create a linear regression model fitting the son's height (sheight) by the father's height (fheight) with the following code:
+
+```
+    regfit<-lm(sheight ~ fheight, data=father.son)
+```    
+  Which of the following code return similar result when using the rxLinMod() function?
+     + A. `rxLinMod(sheight ~ fheight, data="father.son.xdf")`
+     + B. `rxLinMod(sheight ~ fheight, data=father.son.xdf)`
+     + C. `rxLinMod(sheight ~ fheight, data=father.son)`
+     + D. `xLinMod(sheight ~ fheight, data=RxXdfData(father.son))`
+     
+  4. You have created a linear regression model named rxlm1. Which of the following shows more information about the model coefficients, together with the residual standard error, multiple R-squared, and adjusted R-squared?
+      + A. `rxSummary(rxlm1)`
+      + B. `summary(rxlm1)`
+      + C. `rxlm1`
+      + D. `rxlm1$summary`
+      
+  5. When using `rxLinMod()` function, which argument you need to set to return the variance-covariance matrix of the regression coefficients?
+      + A. `coefLabelStyle`
+      + B. `covariance`
+      + C. `covData`
+      + D. `covCoef`
+
+  6. Which three scenarios are possible when using the `rxPredict()` function?
+      + A. If a data frame is specified as the input data, a data frame is returned.
+      + B. If a data frame is specified as the input data and the outData is NULL, an RxXdfData data source object is returned.
+      + C. If an XDF file is specified as the input data, an RxXdfData data source object is returned
+      + D. If an XDF file is specified as the input data and the outData is NULL, the predicted values are appended to the original data file.
+
+  7. Which three types of data can be used when using the `rxDForest()` function?
+      + A. A data.frame
+      + B. A data source object
+      + C. A character string defining the path to the input XDF file
+      + D. A matrix
+
+  8. Consider the father.son dataset from the UsingR package. You have split the dataset into training and test dataset named fstrain and fstest respectively. You can train a linear regression model using the training dataset fitting the son's height by the father's height with the following code: 
+
+```
+    regfit<-lm(sheight ~ fheight, data=fstrain)
+```    
+You can obtain the fitted values of the model using the following code:
+
+```
+   regfit$fitted.values 
+```   
+Which of the following code return similar result when using the `rxLinMod()` function?
+
+```
+# A
+regfit2 <- rxLinMod(sheight ~ fheight, data=fstrain) 
+regfit2$fitted.values
+
+# B
+regfit2 <- rxLinMod(sheight ~ fheight, data=fstrain) 
+rxPredict(regfit2, data=fstrain)
+
+# C
+regfit2 <- rxLinMod(sheight ~ fheight, data=fstrain) 
+rxPredict(regfit2, data=fstest)
+
+# D
+regfit2 <- rxLinMod(sheight ~ fheight, data=fstrain) 
+rxPredict(regfit2, data=fstrain, computeResiduals = TRUE)
+
+# E
+regfit2 <- rxLinMod(sheight ~ fheight, data=fstrain) 
+rxPredict(regfit2, data=fstest, computeResiduals = TRUE)
+```
+
+  9. When using `rxLinMod()` function, which value would you set to the `reportProgress` argument so that only the number of processed rows printed and updated are reported?
+
+      + A. 0
+      + B. 1
+      + C. 2
+      + D. 3
+      
+  10. With reference to the New York Taxi data, which of the following code will return an error?
+      + A. `rxLinMod(tip_percent ~ trip_distance, data = input_xdf)`
+      + B. `rxLinMod(tip_percent ~ trip_distance+payment_type, data = input_xdf)`
+      + C. `rxLinMod(tip_percent ~ ., data = input_xdf)`
+      + D. `rxLinMod(tip_percent ~ trip_distance:payment_type, data = input_xdf)`
+
+## Answers
+  1. B
+  2. ABC
+  3. C
+  4. B
+  5. D
+  6. ACD
+  7. ABC
+  8. B?
+  9. B
+  10. C?
+  
 ## General Resources <a name="general-resources"></a>
 
 * [Learn Analytics @ Microsoft](http://learnanalytics.microsoft.com/)
