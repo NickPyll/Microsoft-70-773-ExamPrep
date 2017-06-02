@@ -80,7 +80,33 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   5. AC
   
 # Chapter 2 - Reading and Preparing Data
-
+  - Read supported data file formats, such as text files, SAS, and SPSS
+  - Convert data to XDF format
+  - Identify trade-offs between XDF and flat text files
+  - Read data through Open Database Connectivity (ODBC) data sources
+  - Read in files from other file systems
+  - Use an internal data frame as a data source
+  - Process data from sources that cannot be read natively by R Server
+  - Create complex formulas to perform multiple tasks in one pass through the data
+  - Subset rows of data, modify and create columns by using the **Transforms** argument
+  - Choose when to use on-the-fly transformations versus in-data transform trade-offs
+  - Handle missing values through filtering or replacement
+  - Generate a data frame or an XDF file
+  - Process dates (**POSIXct**, **POSIXlt**)
+  - Define a transform function
+  - Reshape data by using a transform function
+  - Use open source packages, such as lubridate
+  - Pass in values by using **transformVars** and **transformEnvir**
+  - Use internal **.rx** variables and functions for tasks, including cross-chunk communication
+  - Sort data in various orders, such as ascending and descending
+  - Use **rxSort** deduplication to remove duplicate values
+  - Merge data sources using **rxMerge()**
+  - Merge options and types
+  - Identify when alternatives to **rxSort** and **rxMerge** should be used
+  - Create features using RML functions, such as **featurizeText()**
+  - Create indicator variables and arrays using RML functions, such as **categorical()** and **categoricalHash()**
+  - Perform feature selection using RML functions
+  
 ## Reading the Data
 
 `rxImport` - Used to import various file types into XDF format
@@ -186,7 +212,7 @@ Advantages/Disadvantages of XDF over CSV: </br>
       + C. data.frame
       + D. factor
       
-  2. Consider the rxSummary() function. Which notation should you use for the formula argument to summarize the column trip_duration?
+  2. Consider the `rxSummary()` function. Which notation should you use for the formula argument to summarize the column trip_duration?
       + A. `+ trip_duration`
       + B. `? trip_duration`
       + C. `= trip_duration`
@@ -277,7 +303,14 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   5. B
 
 # Chapter 3 - Examining and Visualizing the Data
-
+  - Compute crosstabs and univariate statistics
+  - Choose when to use **rxCrossTabs** versus **rxCube**
+  - Integrate with open source technologies by using packages such as dplyrXdf
+  - Use **group by** functionality
+  - Visualize in-memory data with base plotting functions and ggplot2
+  - Create custom visualizations with **rxSummary** and **rxCube**
+  - Visualize data with **rxHistogram** and **rxLinePlot**, including faceted plots
+  
 ## Examining the Data
 
 `rxSummary` Objects can be explored using `names(rxSummary(~., data))`
@@ -302,6 +335,11 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
 `rxHistogram` Visual display of frequency distribution
   - syntax `rxHistogram(formula, data, <options>)`
   - can specify `startVal` and `endVal`
+
+`rxLinePlot`
+
+`rxCor` - displays correlation matrix
+  - syntax `rxCor(formula, data)`
   
 ## Quiz
 
@@ -439,7 +477,32 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
   5. BCD
   
 # Chapter 4 - Clustering and Modeling
-
+  - Extract quantiles by using **rxQuantile**
+  - Use **rxLinMod**, **rxGlm**, and **rxLogit** to estimate linear models
+  - Set the family for a generalized linear model by using functions such as **rxTweedie**
+  - Process data on the fly by using the appropriate arguments and functions, such as the **F** function and **Transforms** argument
+  - Weight observations through frequency or probability weights
+  - Choose between different types of automatic variable selections, such as greedy searches, repeated scoring, and byproduct of training
+  - Identify the impact of missing values during automatic variable selection
+  - Use **rxDTree**, **rxDForest**, and **rxBTrees** to build partitioning models
+  - Adjust the weighting of false positives and misses by using loss
+  - Select parameters that affect bias and variance, such as pruning, learning rate, and tree depth
+  - Use **as.rpart** to interact with open source ecosystems
+  - Use **rxPredict** to generate predictions
+  - Perform parallel scoring using **rxExec**
+  - Generate different types of predictions, such as link and response scores for GLM, response, prob, and vote for **rxDForest**
+  - Generate different types of residuals, such as Usual, Pearson, and DBM
+  - Summarize estimated models
+  - Run arbitrary code out of process, such as parallel parameter tuning by using **rxExec**
+  - Evaluate tree models by using **RevoTreeView** and **rxVarImpPlot**
+  - Calculate model evaluation metrics by using built-in functions
+  - Calculate model evaluation metrics and visualizations by using custom code, such as mean absolute percentage error and precision recall curves
+  - Build and use a One-Class Support Vector Machine
+  - Build and use linear and logistic regressions that use L1 and L2 regularization
+  - Build and use a decision tree by using FastTree
+  - Use FastTree as a recommender with ranking loss (NDCG)
+  - Build and use a simple three-layer feed-forward neural network     
+  
 ## Clustering
    
 `rxKmeans`
@@ -625,7 +688,32 @@ rxHistogram(~tip_pred_2, mht_xdf, numBreaks = 50)
 ```
 
 # Chapter 5 - Deploying and Scaling
-
+  - Change the compute context (**rxHadoopMR**, **rxSpark**, **rxLocalseq**, and **rxLocalParallel**)
+  - Identify which compute context to use for different tasks
+  - Use different data source objects, depending on the context (**RxOdbcData** and **RxTextData**)
+  - Identify and use appropriate data sources for different data sources and compute contexts (HDFS and SQL Server)
+  - Debug processes across different compute contexts
+  - Identify use cases for **RevoPemaR**
+  - Identify and execute tasks that can be run only in the local compute context
+  - Identify tasks that are more efficient to run in the local compute context
+  - Choose between **rxLocalseq** and **rxLocalParallel**
+  - Profile across different compute contexts
+  - Choose when to perform in-database versus out-of-database computations
+  - Identify limitations of in-database computations
+  - Use in-database versus out-of-database compute contexts appropriately
+  - Use stored procedures for data processing steps
+  - Serialize objects and write back to binary fields in a table
+  - Write tables
+  - Configure R to optimize SQL Server (**chunksize**, **numtasks**, and **computecontext**)
+  - Effectively communicate performance properties to SQL administrators and architects (SQL Server Profiler)  
+  - Use appropriate R Server functions in Spark; integrate with Hive, Pig, and Hadoop MapReduce
+  - Integrate with the Spark ecosystem of tools, such as SparklyR and SparkR
+  - Profile and tune across different compute contexts
+  - Use **doRSR** for parallelizing code that was written using open source **foreach**
+  - Deploy predictive models to SQL Server as a stored procedure
+  - Deploy an arbitrary function to Azure Machine Learning by using the AzureML R package
+  - Identify when to use DeployR  
+  
 **Create pointer to SQL table**
 
 ```
@@ -1051,41 +1139,41 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)E)
       
 ## Answers
 
-  1. B
+  1. ABC
   2. B
   3. B
-  4. D
-  5. ABC
-  6. A
-  7. D
-  8. C
+  4. B
+  5. D
+  6. ABC
+  7. A
+  8. D
   9. C
-  10. AD
-  11. B
-  12. D
-  13. ABD
-  14. C
-  15. A
-  16. C
-  17. AD
-  18. C
-  19.
-  20.
-  21.
-  22.
-  23.
-  24.
-  25.
-  26.
-  27.
-      
+  10. C
+  11. AD
+  12. B
+  13. D
+  14. ABD
+  15. C
+  16. A
+  17. C
+  18. AD
+  19. C
+  20. C
+  21. A
+  22. AC
+  23. D
+  24. B
+  25. A
+  26. ABD
+  27. ABC
+  28. D
       
 ## General Resources <a name="general-resources"></a>
 
-* [Learn Analytics @ Microsoft](http://learnanalytics.microsoft.com/)
-edx
-datacamp
-Microsoft R Documentation(https://msdn.microsoft.com/en-us/microsoft-r/index)
+* [Learn Analytics @ Microsoft](http://learnanalytics.microsoft.com)
+* [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info)
+* [Big Data Analytics with Revolution R Enterprise](https://campus.datacamp.com/courses/big-data-revolution-r-enterprise-tutorial)
+* [Microsoft R Documentation](https://msdn.microsoft.com/en-us/microsoft-r/index)
       
 
 
