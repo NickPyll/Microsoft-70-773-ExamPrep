@@ -18,9 +18,9 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
 - [Chapter 5 - Deploying and Scaling](#chapter-5)
   - [Chapter 5 Quiz](#quiz5)
 - [Final Exam](#exam)  
-  
-# Chapter 1 - Introduction <a name="chapter-1"></a>
 
+<a name="chapter-1"></a>
+# Chapter 1 - Introduction 
 `package` - Collection of functions, data, and compiled code.
 
 `data.frame` - R uses a data type called a `data.frame`, which must be loaded in memory.  This can be very limiting, especially as data sets get very large.
@@ -52,8 +52,8 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       - 2: rows processed and timings are reported.
       - 3: rows processed and all timings are reported.
   - `traceLevel` - useful in debugging
-
-## Quiz 1 <a name="quiz1"></a>
+<a name="quiz1"></a>
+## Quiz 1 
 
   1. In the advanced analytics lifecyle, what would you typically start with?
       + A. Transform the data
@@ -92,8 +92,8 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   3. ABD
   4. ABC
   5. AC
-  
-# Chapter 2 - Reading and Preparing Data <a name="chapter-2"></a>
+<a name="chapter-2"></a>  
+# Chapter 2 - Reading and Preparing Data 
   - Read supported data file formats, such as text files, SAS, and SPSS
   - Convert data to XDF format
   - Identify trade-offs between XDF and flat text files
@@ -152,7 +152,6 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
     - ValidObs
     - MissingObs
   
-   
 **Creating Pointers to Files**
 ```
 # CSV Pointer
@@ -206,19 +205,19 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
     
 ```
 
-MRS has two ways of dealing with flat files:
+**MRS has two ways of dealing with flat files:**
    1.  it can work directly with the flat files, meaning that it can read and write to flat files directly,
    2.  it can covert flat files to a format called XDF (XDF stands for external data frame).
 
-Advantages/Disadvantages of XDF over CSV: </br>
+**Advantages/Disadvantages of XDF over CSV:** </br>
   - *Advantages*
    1. XDF is compressed, and therefore much smaller than a CSV.
    2. XDF read and processed much faster than CSV.
   - *Disadvantages* </br>
    1. Only recognized by MRS.
    2. Runtime cost associated with conversion to XDF (though quickly offset by the reduced runtime of working with XDF file)
-   
-## Quiz 2a <a name="quiz2a"></a>
+<a name="quiz2a"></a>   
+## Quiz 2a 
 
   1. Which two possible R data type can be returned by the `rxImport()` function?
       + A. vector
@@ -271,8 +270,8 @@ Advantages/Disadvantages of XDF over CSV: </br>
 All of the summary and analytics functions in `RevoScaleR` allow us to create new columns on-the-fly. **Note: This method does NOT write the column to the XDF. Because of the lower IO overhead, this is more efficient for a single run.**
 
 ** more info on `transformFunc`**
-
-## Quiz 2b <a name="quiz2b"></a>
+<a name="quiz2b"></a>
+## Quiz 2b 
 
   1. Consider the `rxGetInfo()` function. Which argument performs similar function to the argument `n` in the `head()` function?
       + A. startRow
@@ -294,14 +293,15 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   data_csv <- RxTextData(file_1, colClasses = col_classes)
   data_df <- rxImport(data_csv)
   rxImport(file_1, file_2, colClasses = col_classes, overwrite = TRUE)
+  
   ```    
   
      You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closes result for `data.xdf` using `rxGetInfo()` function?
 
-  + A. `rxGetInfo(file_2)`
-  + B. `rxGetInfo(file_2, numRows = 6)`
-  + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
-  + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
+     + A. `rxGetInfo(file_2)`
+     + B. `rxGetInfo(file_2, numRows = 6)`
+     + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
+     + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
   
   5. Consider the `rxDataStep()` function. Which three of the following assignments are valid for the `transformPackages` argument?
       + A. `transformPackages = list("stringr", "lubridate")`
@@ -315,8 +315,8 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   3. C
   4. BCD
   5. B
-
-# Chapter 3 - Examining and Visualizing the Data <a name="chapter-3"></a>
+<a name="chapter-3"></a>
+# Chapter 3 - Examining and Visualizing the Data 
   - Compute crosstabs and univariate statistics
   - Choose when to use **rxCrossTabs** versus **rxCube**
   - Integrate with open source technologies by using packages such as dplyrXdf
@@ -354,8 +354,8 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
 
 `rxCor` - displays correlation matrix
   - syntax `rxCor(formula, data)`
-  
-## Quiz 3a <a name="chapter-3a"></a>
+<a name="quiz3a"></a>  
+## Quiz 3a 
 
   1. Which three elements might contain the values resulted from the `rxCrossTabs()` function call?
       + A. sums
@@ -405,10 +405,11 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
     - means of combinations... `price ~ product:region` 
 
 `rxFactors`- Another way to modify or create factors
-
-## Quiz 3b <a name="chapter-3b"></a>
+<a name="quiz3b"></a>
+## Quiz 3b 
 
   1. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf.  Which of the following code will produce similar values for Temp variable to `rxCube(Temp ~ Day:Month, "airquality.xdf")`?
+  
       + A. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf")`
       + B. `rxCrossTabs(Temp ~ Month:Day, "airquality.xdf")`
       + C. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = TRUE)`
@@ -489,8 +490,8 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
   3. C
   4. AD
   5. BCD
-  
-# Chapter 4 - Clustering and Modeling <a name="chapter-4"></a>
+<a name="chapter-4"></a>  
+# Chapter 4 - Clustering and Modeling 
   - Extract quantiles by using **rxQuantile**
   - Use **rxLinMod**, **rxGlm**, and **rxLogit** to estimate linear models
   - Set the family for a generalized linear model by using functions such as **rxTweedie**
@@ -544,8 +545,8 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 
 `rxQuantile`
   - `rxQuantile("varName", data, probs = seq(0, 1, 0.25))`
-
-## Quiz 4 <a name="quiz4"></a>
+<a name="quiz4"></a>
+## Quiz 4 
 
   1. Consider the airquality dataset, which is part of Base R datasets. You have the following code:
 
@@ -555,6 +556,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
     cl$cluster
 ```   
   Which of the following code will produce similar result using the `rxKmeans()` function?
+  
      + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
      + B. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
      + C. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
@@ -572,6 +574,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
     regfit<-lm(sheight ~ fheight, data=father.son)
 ```    
   Which of the following code return similar result when using the rxLinMod() function?
+  
      + A. `rxLinMod(sheight ~ fheight, data="father.son.xdf")`
      + B. `rxLinMod(sheight ~ fheight, data=father.son.xdf)`
      + C. `rxLinMod(sheight ~ fheight, data=father.son)`
@@ -659,8 +662,8 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)
   8. B?
   9. B
   10. C?
-
-## Modeling Lab <a name="modeling-lab"></a>
+<a name="modeling-lab"></a>
+## Modeling Lab 
 
 ```
 For this lab, please use the mht_lab2.xdf provided.
@@ -700,8 +703,8 @@ rxHistogram(~tip_pred_1, mht_xdf)
 
 rxHistogram(~tip_pred_2, mht_xdf, numBreaks = 50)
 ```
-
-# Chapter 5 - Deploying and Scaling <a name="chapter-5"></a>
+<a name="chapter-5"></a>
+# Chapter 5 - Deploying and Scaling 
   - Change the compute context (**rxHadoopMR**, **rxSpark**, **rxLocalseq**, and **rxLocalParallel**)
   - Identify which compute context to use for different tasks
   - Use different data source objects, depending on the context (**RxOdbcData** and **RxTextData**)
@@ -753,8 +756,8 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
 `RxSpark` - point to Spark cluster
 `rxExec`
 
-
-## Quiz 5 <a name="quiz5"></a>
+<a name="quiz5"></a>
+## Quiz 5 
 
   1. Which argument would you use to indicate the type of file system used when defining RxXdfData object?
       + A. file
@@ -801,8 +804,8 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
   3. BCD
   4. 
   5.
-  
-## Final Exam <a name="exam"></a>
+<a name="exam"></a>  
+## Final Exam 
 
   1. Consider the ChickWeight dataset, which is part of Base R datasets. Which of the following code using `rxHistogram()` will produce similar result to `hist(subset(ChickWeight,Time==21)$weight,freq=TRUE,breaks=10)`?
       + A. `rxHistogram(~weight, ChickWeight, rowSelection = (Time==21), histType = "Percent", numBreaks = 10)`
