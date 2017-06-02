@@ -296,12 +296,12 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   
   ```    
   
-     You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closes result for `data.xdf` using `rxGetInfo()` function?
+You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closes result for `data.xdf` using `rxGetInfo()` function?
 
-     + A. `rxGetInfo(file_2)`
-     + B. `rxGetInfo(file_2, numRows = 6)`
-     + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
-     + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
+   + A. `rxGetInfo(file_2)`
+   + B. `rxGetInfo(file_2, numRows = 6)`
+   + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
+   + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
   
   5. Consider the `rxDataStep()` function. Which three of the following assignments are valid for the `transformPackages` argument?
       + A. `transformPackages = list("stringr", "lubridate")`
@@ -555,12 +555,12 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
     cl <- kmeans(z, 2) 
     cl$cluster
 ```   
-  Which of the following code will produce similar result using the `rxKmeans()` function?
+Which of the following code will produce similar result using the `rxKmeans()` function?
   
-     + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
-     + B. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
-     + C. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
-     + D. `cl <- rxKmeans(~Wind+Temp,data=z,maxIterations=2)`
+   + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
+   + B. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
+   + C. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
+   + D. `cl <- rxKmeans(~Wind+Temp,data=z,maxIterations=2)`
      
   2. Which three arguments are mandatory when using the rxKmeans() function?
      + A. either centers or numClusters
@@ -573,12 +573,12 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 ```
     regfit<-lm(sheight ~ fheight, data=father.son)
 ```    
-  Which of the following code return similar result when using the rxLinMod() function?
+Which of the following code return similar result when using the rxLinMod() function?
   
-     + A. `rxLinMod(sheight ~ fheight, data="father.son.xdf")`
-     + B. `rxLinMod(sheight ~ fheight, data=father.son.xdf)`
-     + C. `rxLinMod(sheight ~ fheight, data=father.son)`
-     + D. `xLinMod(sheight ~ fheight, data=RxXdfData(father.son))`
+   + A. `rxLinMod(sheight ~ fheight, data="father.son.xdf")`
+   + B. `rxLinMod(sheight ~ fheight, data=father.son.xdf)`
+   + C. `rxLinMod(sheight ~ fheight, data=father.son)`
+   + D. `xLinMod(sheight ~ fheight, data=RxXdfData(father.son))`
      
   4. You have created a linear regression model named rxlm1. Which of the following shows more information about the model coefficients, together with the residual standard error, multiple R-squared, and adjusted R-squared?
       + A. `rxSummary(rxlm1)`
@@ -817,11 +817,12 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
 ```
     file_1 <- 'data.csv'
 ```    
-    You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to import data.csv to a data.frame called data_df using rxImport() function. Which of the following code should you use?
-      + A. `data_df <- rxImport(file_1, colClasses = col_classes)`
-      + B. `file_1 <- rxImport(data_df, colClasses = col_classes)`
-      + C. `rxImport(file_1, data_df, colClasses = col_classes)`
-      + D. `rxImport(data_df, file_1, colClasses = col_classes)`
+You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to import data.csv to a data.frame called data_df using rxImport() function. Which of the following code should you use?
+
+   + A. `data_df <- rxImport(file_1, colClasses = col_classes)`
+   + B. `file_1 <- rxImport(data_df, colClasses = col_classes)`
+   + C. `rxImport(file_1, data_df, colClasses = col_classes)`
+   + D. `rxImport(data_df, file_1, colClasses = col_classes)`
       
   3. Consider the cars dataset, which is part of Base R datasets. Which of the following code using `rxLinePlot()` will produce similar result to `plot(cars)`?
       + A. `rxLinePlot(cars)`
@@ -834,22 +835,24 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
     file_1 <- 'data.xdf' 
     file_2 <- 'data.csv'
 ```    
-    You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to import data.csv to data.xdf using rxImport() function. Which of the following code should you use?
-      + A. `file_2 <- rxImport(file_1, colClasses = col_classes, overwrite = TRUE)`
-      + B. `rxImport(file_1, file_2, colClasses = col_classes, overwrite = TRUE)`
-      + C. `file_1 <- rxImport(file_2, colClasses = col_classes, overwrite = TRUE)`
-      + D. `rxImport(file_2, file_1, colClasses = col_classes, overwrite = TRUE)`
+You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to import data.csv to data.xdf using rxImport() function. Which of the following code should you use?
+
+   + A. `file_2 <- rxImport(file_1, colClasses = col_classes, overwrite = TRUE)`
+   + B. `rxImport(file_1, file_2, colClasses = col_classes, overwrite = TRUE)`
+   + C. `file_1 <- rxImport(file_2, colClasses = col_classes, overwrite = TRUE)`
+   + D. `rxImport(file_2, file_1, colClasses = col_classes, overwrite = TRUE)`
 
   5. You have the following code:
 ```
     file_1 <- 'data.csv' 
     data_csv <- RxTextData(file_1, colClasses = col_classes)
 ```
-    You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to show statistical summaries for a column called 'amount' from the data.csv file using rxSummary() function. Which three of the following code could you use?
-      + A. `rxSummary( ~ amount, 'data.csv')`
-      + B. `rxSummary( ~ amount, file_1)`
-      + C. 'rxSummary( ~ amount, data_csv)`
-      + D. `rxSummary( ~ amount, data.csv)`
+You are working on a local compute context and you've already set the working directory, specified colClasses, and imported the necessary libraries. You want to show statistical summaries for a column called 'amount' from the data.csv file using rxSummary() function. Which three of the following code could you use?
+
+   + A. `rxSummary( ~ amount, 'data.csv')`
+   + B. `rxSummary( ~ amount, file_1)`
+   + C. `rxSummary( ~ amount, data_csv)`
+   + D. `rxSummary( ~ amount, data.csv)`
 
   6. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf.  Which of the following code will produce similar values for Temp variable to rxCube(Temp ~ Day:Month, "airquality.xdf")?
       + A. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = TRUE)`
@@ -897,11 +900,12 @@ rxDataStep("airquality.xdf", outFile = "airquality.xdf",
     cl <- kmeans(z, 2) 
     cl$cluster
 ```    
-    Which of the following code will produce similar result using the rxKmeans() function?
-      + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
-      + B. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
-      + C. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
-      + D. `cl <- rxKmeans(~Wind+Temp,data=z,maxIterations=2)`
+Which of the following code will produce similar result using the rxKmeans() function?
+
+   + A. `cl <- rxKmeans(~Wind+Temp,data=z,centers=2)`
+   + B. `cl <- rxKmeans(~Wind+Temp,data=z,reportProgress=2)`
+   + C. `cl <- rxKmeans(~Wind+Temp,data=z,numClusters=2)`
+   + D. `cl <- rxKmeans(~Wind+Temp,data=z,maxIterations=2)`
       
   10. You have the following code:
 ```
@@ -969,11 +973,12 @@ rxDataStep(file_1, file_2,
     sqlTable <- "NYCTaxiBig" 
     nyc_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead = sqlRowsPerRead, table = sqlTable)
 ```    
-    Which of the following code would you use to define a compute context that points to the SQL server?
-      + A. `sqlCC <- RxSqlServerData(connectionString = sqlConnString)`
-      + B. `sqlCC <- RxLocalSeq(connectionString = sqlConnString)`
-      + C. `sqlCC <- RxInSqlServer(connectionString = sqlConnString)`
-      + D. `sqlCC <- rxExecuteSQLDDL(connectionString = sqlConnString)`
+Which of the following code would you use to define a compute context that points to the SQL server?
+
+   + A. `sqlCC <- RxSqlServerData(connectionString = sqlConnString)`
+   + B. `sqlCC <- RxLocalSeq(connectionString = sqlConnString)`
+   + C. `sqlCC <- RxInSqlServer(connectionString = sqlConnString)`
+   + D. `sqlCC <- rxExecuteSQLDDL(connectionString = sqlConnString)`
       
   17. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf. Which two of the following code will display the means of the Temp variable with the Day as the rows and the Month as the columns?
 
@@ -1081,11 +1086,12 @@ rxDataStep("airquality.xdf",
       
   22. Consider the father.son dataset from the UsingR package. You have the following code `cor(father.son)`
     
-    Which of the following code return similar result when using the rxCor() function?
-      + A. `rxCor(father.son)`
-      + B. `rxCor(sheight~fheight,father.son)`
-      + C. `rxCor(RxXdfData(father.son))`
-      + D. `rxCor(~sheight+fheight,father.son)`
+Which of the following code return similar result when using the rxCor() function?
+
+   + A. `rxCor(father.son)`
+   + B. `rxCor(sheight~fheight,father.son)`
+   + C. `rxCor(RxXdfData(father.son))`
+   + D. `rxCor(~sheight+fheight,father.son)`
 
   23. Consider the rxSummary() function. Which notation should you use for the formula argument to summarize the column trip_duration?
       + A. `= trip_duration`
@@ -1097,11 +1103,12 @@ rxDataStep("airquality.xdf",
 ```
     model1 <- rxLinMod(tip_percent~trip_distance, data=input_xdf)
 ```    
-    Which of the following code resembles the approach but using a simple regression tree algorithm?
-      + A. `model2 <- rxDTree(tip_percent~trip_distance, data=input_xdf)`
-      + B. `model2 <- rxDTree(tip_percent~trip_distance, data=input_xdf,ntree=10)`
-      + C. `model2 <- rxLogit(tip_percent~trip_distance, data=input_xdf)`
-      + D. `model2 <- rxDForest(tip_percent~trip_distance, data=input_xdf)`
+Which of the following code resembles the approach but using a simple regression tree algorithm?
+
+   + A. `model2 <- rxDTree(tip_percent~trip_distance, data=input_xdf)`
+   + B. `model2 <- rxDTree(tip_percent~trip_distance, data=input_xdf,ntree=10)`
+   + C. `model2 <- rxLogit(tip_percent~trip_distance, data=input_xdf)`
+   + D. `model2 <- rxDForest(tip_percent~trip_distance, data=input_xdf)`
       
   25. Which three steps are part of the preparation phase in the advanced analytics lifecycle?
       + A. Ingest
