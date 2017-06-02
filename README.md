@@ -4,8 +4,22 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
 ## Table of Contents
 
 - [General Resources](#general-resources)
-
-# Chapter 1 - Introduction
+- [Chapter 1 - Introduction](#chapter-1)
+  - [Chapter 1 Quiz](#quiz1)
+- [Chapter 2 - Reading and Preparing Data](#chapter-2)  
+  - [Chapter 2 Quiz A](#quiz2a)
+  - [Chapter 2 Quiz B](#quiz2b)
+- [Chapter 3 - Examining and Visualizing the Data](#chapter-3) 
+  - [Chapter 3 Quiz A](#quiz3a)
+  - [Chapter 3 Quiz B](#quiz3b)
+- [Chapter 4 - Clustering and Modeling](#chapter-4)
+  - [Chapter 4 Quiz](#quiz4)
+  - [Modeling Lab](#modeling-lab)
+- [Chapter 5 - Deploying and Scaling](#chapter-5)
+  - [Chapter 5 Quiz](#quiz5)
+- [Final Exam](#exam)  
+  
+# Chapter 1 - Introduction <a name="chapter-1"></a>
 
 `package` - Collection of functions, data, and compiled code.
 
@@ -39,7 +53,7 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       - 3: rows processed and all timings are reported.
   - `traceLevel` - useful in debugging
 
-## Quiz
+## Quiz 1 <a name="quiz1"></a>
 
   1. In the advanced analytics lifecyle, what would you typically start with?
       + A. Transform the data
@@ -71,7 +85,7 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       + C. RStudio
       + D. Microsoft Word
 
-## Answers
+## Quiz 1 Answers
 
   1. C
   2. B
@@ -79,7 +93,7 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   4. ABC
   5. AC
   
-# Chapter 2 - Reading and Preparing Data
+# Chapter 2 - Reading and Preparing Data <a name="chapter-2"></a>
   - Read supported data file formats, such as text files, SAS, and SPSS
   - Convert data to XDF format
   - Identify trade-offs between XDF and flat text files
@@ -204,7 +218,7 @@ Advantages/Disadvantages of XDF over CSV: </br>
    1. Only recognized by MRS.
    2. Runtime cost associated with conversion to XDF (though quickly offset by the reduced runtime of working with XDF file)
    
-## Quiz
+## Quiz 2a <a name="quiz2a"></a>
 
   1. Which two possible R data type can be returned by the `rxImport()` function?
       + A. vector
@@ -258,7 +272,7 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
 
 ** more info on `transformFunc`**
 
-## Quiz
+## Quiz 2b <a name="quiz2b"></a>
 
   1. Consider the `rxGetInfo()` function. Which argument performs similar function to the argument `n` in the `head()` function?
       + A. startRow
@@ -302,7 +316,7 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   4. BCD
   5. B
 
-# Chapter 3 - Examining and Visualizing the Data
+# Chapter 3 - Examining and Visualizing the Data <a name="chapter-3"></a>
   - Compute crosstabs and univariate statistics
   - Choose when to use **rxCrossTabs** versus **rxCube**
   - Integrate with open source technologies by using packages such as dplyrXdf
@@ -341,7 +355,7 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
 `rxCor` - displays correlation matrix
   - syntax `rxCor(formula, data)`
   
-## Quiz
+## Quiz 3a <a name="chapter-3a"></a>
 
   1. Which three elements might contain the values resulted from the `rxCrossTabs()` function call?
       + A. sums
@@ -392,7 +406,7 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
 
 `rxFactors`- Another way to modify or create factors
 
-## Quiz
+## Quiz 3b <a name="chapter-3b"></a>
 
   1. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf.  Which of the following code will produce similar values for Temp variable to `rxCube(Temp ~ Day:Month, "airquality.xdf")`?
       + A. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf")`
@@ -476,7 +490,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
   4. AD
   5. BCD
   
-# Chapter 4 - Clustering and Modeling
+# Chapter 4 - Clustering and Modeling <a name="chapter-4"></a>
   - Extract quantiles by using **rxQuantile**
   - Use **rxLinMod**, **rxGlm**, and **rxLogit** to estimate linear models
   - Set the family for a generalized linear model by using functions such as **rxTweedie**
@@ -531,7 +545,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 `rxQuantile`
   - `rxQuantile("varName", data, probs = seq(0, 1, 0.25))`
 
-## Quiz
+## Quiz 4 <a name="quiz4"></a>
 
   1. Consider the airquality dataset, which is part of Base R datasets. You have the following code:
 
@@ -646,7 +660,7 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)
   9. B
   10. C?
 
-## Lab
+## Modeling Lab <a name="modeling-lab"></a>
 
 ```
 For this lab, please use the mht_lab2.xdf provided.
@@ -687,7 +701,7 @@ rxHistogram(~tip_pred_1, mht_xdf)
 rxHistogram(~tip_pred_2, mht_xdf, numBreaks = 50)
 ```
 
-# Chapter 5 - Deploying and Scaling
+# Chapter 5 - Deploying and Scaling <a name="chapter-5"></a>
   - Change the compute context (**rxHadoopMR**, **rxSpark**, **rxLocalseq**, and **rxLocalParallel**)
   - Identify which compute context to use for different tasks
   - Use different data source objects, depending on the context (**RxOdbcData** and **RxTextData**)
@@ -740,7 +754,7 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
 `rxExec`
 
 
-## Quiz
+## Quiz 5 <a name="quiz5"></a>
 
   1. Which argument would you use to indicate the type of file system used when defining RxXdfData object?
       + A. file
@@ -788,7 +802,7 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
   4. 
   5.
   
-## Final Exam
+## Final Exam <a name="exam"></a>
 
   1. Consider the ChickWeight dataset, which is part of Base R datasets. Which of the following code using `rxHistogram()` will produce similar result to `hist(subset(ChickWeight,Time==21)$weight,freq=TRUE,breaks=10)`?
       + A. `rxHistogram(~weight, ChickWeight, rowSelection = (Time==21), histType = "Percent", numBreaks = 10)`
