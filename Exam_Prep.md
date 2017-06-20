@@ -1,5 +1,5 @@
 # Microsoft-70-773-ExamPrep
-Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info)
+Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info) and [Big data Revolution with R Enterprise](https://campus.datacamp.com/courses/big-data-revolution-r-enterprise-tutorial/chapter-1-introduction-1?ex=1)
 
 ## Table of Contents
 
@@ -84,7 +84,22 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
       + B. SQL Server Management Studio
       + C. RStudio
       + D. Microsoft Word
-
+      
+  6. What are the challenges in handling big data? Select all that apply.
+      + A) Move
+      + B) Manage
+      + C) Make
+      + D) Munge
+      + E) Merge
+  7. Which file format do parallel external memory algorithms use to compute results? Select the correct answer.
+      + A) .xm
+      + B) .xdf
+      + C) .xls
+      + D) xi  
+  8. RevoScaleR is a package that allows R to scale to the enterprise level. How does it accomplish this?
+      + A) It relies on specialized hardware and drivers that can support extreme memory loads.
+      + B) It relies on algorithms that process data in a chunked, incremental manner that only depend on (relatively) small amounts of data being read at a time.  
+  
 ## Quiz 1 Answers
 
   1. C
@@ -92,6 +107,10 @@ Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Se
   3. ABD
   4. ABC
   5. AC
+  6. ABDE
+  7. B
+  8. B
+  
 <a name="chapter-2"></a>  
 # Chapter 2 - Reading and Preparing Data 
   - Read supported data file formats, such as text files, SAS, and SPSS
@@ -248,13 +267,33 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
       + B. You can use open source R functions directly with an XDF file
       + C. Computation using an XDF file is faster than using data.frame incorrect
       + D. An XDF file is compressed such that it fits to the local computer's memory size
-      
+
+  6. Both `rxGetInfo(data, getVarInfo = TRUE)` and `rxGetVarInfo(data)` return a lot of information about the variables in the dataset represented by data. Which of the following is TRUE:
+      + A) They both return the name of each variable in the dataset.
+      + B) They both return the type of each variable in the dataset.
+      + C) They both return the minimum of each numeric variable in the dataset.
+      + D) They both return the mean of each numeric variable in the dataset.  
+  7. You have an existing `xdf` file, and you just collected a new set of data that you would like to concatenate with your existing file. What are values should the following arguments take to correctly stack one csv file on "top" of another when running `rxImport()`?    
+      + A) append = "row"
+      + B) append = "cols"
+      + C) overwrite = TRUE
+      + D) overwrite = FALSE
+
+  8. What is the appropriate usage of the RevoScaleR function to convert an in-memory data.frame object into an on-disk external data.frame (.xdf) file?
+      + A) `RXDataFrameToXdf(data = internal.df, output = “mynew.xdf”)`
+      + B) `rxDataFrameToXDF(data = internal.df, outFile = “mynew.xdf”)`
+      + C) `rxDataFrameToXdf(data = internal.df, output = “mynew.xdf”)`
+      + D) `rxDataFrameToXdf(data = internal.df, outFile = “mynew.xdf”)`
+
 ## Answers 
   1. BC
   2. D
   3. ABC
   4. D
   5. 
+  6. ABC
+  7. AD
+  8. D
   
 ## Preparing the Data
 
@@ -308,13 +347,30 @@ You are working on a local compute context and you've already set the working di
       + B. `transformPackages = c("stringr","lubridate")`
       + C. `transformPackages = "lubridate"`
       + D. `transformPackages = c("stringr")`
- 
+
+  6. Why is the following function inappropriate to use as a transformFunc function? Assume all elements of mylist on the right side of the assignment exist.
+  
+```r
+    myFun <- function(mylist){
+      mylist$newvar <- scale(mylist$oldvar)
+      mylist$newvar2 <- mylist$oldvar2 - myOtherVar
+    }
+```
+  + A) It creates multiple new elements/variables in mylist.
+  + B) It uses the `scale()` function, which only considers the data that are currently read into memory.
+  + C) It accesses an object (myOtherVar) that is not defined in the scope of the function.
+  + D) It uses the “$” to gain access to individual variables in mylist.
+  + E) All of the above cause problems.
+  
+  
 ## Answers
   1. B
   2. D
   3. C
   4. BCD
   5. B
+  6. B
+  
 <a name="chapter-3"></a>
 # Chapter 3 - Examining and Visualizing the Data 
   - Compute crosstabs and univariate statistics
@@ -530,6 +586,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 `rxLinMod`
   - `rxLinMod(formula, data, <options>)`
   - Lots of output available including `r.squared`, `f.pvalue`, `coef.p.value`
+  - to calculate standard error, the original model must be fit with `covCoef=TRUE`
 
 `rxDTree`
 
@@ -537,14 +594,22 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 
 `rxSplit`
 
+'rxGLM`
+  - use for generalized linear models
+
 `rxCor`
 
 `rxPredict`
   - input can be XDF, data.frame, or character string representing XDF
   - `computeResiduals = TRUE` is used to get residual values
+  - In order to calculate standard error:
+    - the original model must be fit with `covCoef=TRUE`
+    - `computeStdErr = TRUE`
+    - specify `interval =`
 
 `rxQuantile`
   - `rxQuantile("varName", data, probs = seq(0, 1, 0.25))`
+  
 <a name="quiz4"></a>
 ## Quiz 4 
 
@@ -651,6 +716,18 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)
       + C. `rxLinMod(tip_percent ~ ., data = input_xdf)`
       + D. `rxLinMod(tip_percent ~ trip_distance:payment_type, data = input_xdf)`
 
+  11. Which of the following do you need to do in order to compute standard errors for predictions?
+      + A) Specify `computeStdErrors = TRUE` when you construct the predictions with `rxPredict()`.
+      + B) Specify the interval argument when you construct the predictions with `rxPredict()`.
+      + C) Specify `covCoef = TRUE` when you construct the mdoel with `rxLinMod()`.
+      + D) Specify `coefCov = TRUE` when you construct the mdoel with `rxLineMod()`.  
+
+  12. Which of the following are valid arguments for `rxGLM`? Select all that apply.
+      + A) logit
+      + B) binomial
+      + C) Gamma
+      + D) rxTweedie(var.power 1.15)  
+  
 ## Answers
   1. B
   2. ABC
@@ -662,6 +739,9 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)
   8. B?
   9. B
   10. C?
+  11. ABC
+  12. BCD
+  
 <a name="modeling-lab"></a>
 ## Modeling Lab 
 
