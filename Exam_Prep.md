@@ -291,7 +291,7 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
   2. D
   3. ABC
   4. D
-  5. D
+  5. A
   6. ABC
   7. AD
   8. D
@@ -950,7 +950,7 @@ You are working on a local compute context and you've already set the working di
       + C. `rxCrossTabs(Temp ~ Month:Day, "airquality.xdf")`
       + D. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = FALSE)`
 
-  7. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf. Which of the following code using rxHistogram() will produce similar result to hist(airquality$Temp, freq = TRUE, breaks = 10)?
+  7. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airquality.xdf. Which of the following code using rxHistogram() will produce similar result to hist(airquality$Temp, freq = TRUE, breaks = 10)?
 
       + A. `rxHistogram( ~ Temp, "airquality.xdf", breaks = 10)`
       + B. `rxHistogram( ~ Temp, "airquality.xdf", histType = "Percent", numBreaks = 10)`
@@ -1027,7 +1027,7 @@ rxDataStep(file_1, file_2,
 
   11. What is the main advantage of an XDF file over a data.frame?
       + A. You can use open source R functions directly with an XDF file
-      + B. An XDF file can contain data larger than the local computer's memory sizeC.
+      + B. An XDF file can contain data larger than the local computer's memory size
       + C. Computation using an XDF file is faster than using data.frame
       + D. An XDF file is compressed such that it fits to the local computer's memory size
 
@@ -1038,7 +1038,7 @@ rxDataStep(file_1, file_2,
       + C. `rxLinMod(sheight ~ fheight, data=RxXdfData(father.son))`
       + D. `rxLinMod(sheight ~ fheight, data=father.son)`
 
-  13. Which three statement explains how RevoScaleR mitigates R limitation working with data that is larger than the local computer's memory?
+  13. Which three statements explain how RevoScaleR mitigates R limitation working with data that is larger than the local computer's memory?
       + A. RevoScaleR points to the data that sits on the disk
       + B. RevoScaleR loads the data into memory a chunk at a time
       + C. RevoScaleR waits until all the data is loaded into memory
@@ -1070,7 +1070,7 @@ Which of the following code would you use to define a compute context that point
    + C. `sqlCC <- RxInSqlServer(connectionString = sqlConnString)`
    + D. `sqlCC <- rxExecuteSQLDDL(connectionString = sqlConnString)`
       
-  17. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf. Which two of the following code will display the means of the Temp variable with the Day as the rows and the Month as the columns?
+  17. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airquality.xdf. Which two of the following code will display the means of the Temp variable with the Day as the rows and the Month as the columns?
 
 ```
 # A
@@ -1090,7 +1090,7 @@ rxct <- rxCrossTabs(Temp ~ Day:Month, "airquality.xdf")
 print(rxct, output = "means")
 ```
 
-  18. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf and the following code below:
+  18. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airquality.xdf and the following code below:
 ```
     newlevs <- c("1973","1974","1975") 
     rxDataStep("airquality.xdf", outFile = "airquality.xdf", 
@@ -1150,7 +1150,7 @@ rxDataStep(file_2, file_2,
            transforms = xforms, 
            overwrite = TRUE)
 ```
-  20. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf. Which of the following code will return a data.frame that has temperature above 75?
+  20. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airquality.xdf. Which of the following code will return a data.frame that has temperature above 75?
 
 ```
 # A
@@ -1258,29 +1258,29 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)E)
   3. B
   4. D
   5. ABC
-  6. 
-  7. A
-  8. D
-  9. C
-  10. C
-  11. AD
-  12. B
-  13. D
-  14. ABD
-  15. C
-  16. A
-  17. C
-  18. AD
+  6. A
+  7. D
+  8. C
+  9. C 
+  10. AD?
+  11. B
+  12. D
+  13. ABD
+  14. C
+  15. A
+  16. C
+  17. AD
+  18. C
   19. C
-  20. C
-  21. A
-  22. AC
-  23. D
-  24. B
-  25. A
-  26. ABD
-  27. ABC
-  28. D
+  20. A
+  21. AC
+  22. D
+  23. B
+  24. A
+  25. ABD
+  26. ABC
+  27. D
+  28. B
       
 ## General Resources <a name="general-resources"></a>
 
