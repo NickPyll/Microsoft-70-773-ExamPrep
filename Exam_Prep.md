@@ -226,7 +226,7 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
 
 **MRS has two ways of dealing with flat files:**
    1.  it can work directly with the flat files, meaning that it can read and write to flat files directly,
-   2.  it can covert flat files to a format called XDF (XDF stands for external data frame).
+   2.  it can convert flat files to a format called XDF (XDF stands for external data frame).
 
 **Advantages/Disadvantages of XDF over CSV:** </br>
   - *Advantages*
@@ -265,7 +265,7 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
   5. What is the main advantage of an XDF file over a data.frame?
       + A. An XDF file can contain data larger than the local computer's memory size
       + B. You can use open source R functions directly with an XDF file
-      + C. Computation using an XDF file is faster than using data.frame incorrect
+      + C. Computation using an XDF file is faster than using data.frame
       + D. An XDF file is compressed such that it fits to the local computer's memory size
 
   6. Both `rxGetInfo(data, getVarInfo = TRUE)` and `rxGetVarInfo(data)` return a lot of information about the variables in the dataset represented by data. Which of the following is TRUE:
@@ -273,7 +273,8 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
       + B) They both return the type of each variable in the dataset.
       + C) They both return the minimum of each numeric variable in the dataset.
       + D) They both return the mean of each numeric variable in the dataset.  
-  7. You have an existing `xdf` file, and you just collected a new set of data that you would like to concatenate with your existing file. What are values should the following arguments take to correctly stack one csv file on "top" of another when running `rxImport()`?    
+      
+  7. You have an existing `xdf` file, and you just collected a new set of data that you would like to concatenate with your existing file. What values should the following arguments take to correctly stack one csv file on "top" of another when running `rxImport()`?    
       + A) append = "row"
       + B) append = "cols"
       + C) overwrite = TRUE
@@ -290,7 +291,7 @@ sConnectionStr <- "Driver={SQL Server};Server=win-database01;
   2. D
   3. ABC
   4. D
-  5. 
+  5. D
   6. ABC
   7. AD
   8. D
@@ -335,19 +336,25 @@ All of the summary and analytics functions in `RevoScaleR` allow us to create ne
   
   ```    
   
-You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closes result for `data.xdf` using `rxGetInfo()` function?
+You are working on a local compute context and you've already set the working directory, specified `colClasses`, and imported the necessary libraries.  You can use `str(data_df)` to show the structure of the `data_df` data.frame. Which of the following code should you use to achieve the closest result for `data.xdf` using `rxGetInfo()` function?
 
    + A. `rxGetInfo(file_2)`
    + B. `rxGetInfo(file_2, numRows = 6)`
    + C. `rxGetInfo(file_2, getVarInfo = TRUE)`
    + D. `rxGetInfo(file_2, getValueLabels = TRUE)`
   
-  5. Consider the `rxDataStep()` function. Which three of the following assignments are valid for the `transformPackages` argument?
+  4. Consider the `rxDataStep()` function. Which three of the following assignments are valid for the `transformPackages` argument?
       + A. `transformPackages = list("stringr", "lubridate")`
       + B. `transformPackages = c("stringr","lubridate")`
       + C. `transformPackages = "lubridate"`
       + D. `transformPackages = c("stringr")`
 
+  5. When using the `rxDataStep()` function, how do you pass objects , so that it can be referenced by the `transforms` argument?
+      + A. By passing the objects through a data.frame in the `transformObjects` argument.
+      + B. By passing the objects through a named list in the `transformObjects` argument.
+      + C. By passing the objects through a data.frame in the `transformFunc` argument.
+      + D. By passing the objects through a named list in the `transformFunc` argument.
+      
   6. Why is the following function inappropriate to use as a transformFunc function? Assume all elements of mylist on the right side of the assignment exist.
   
 ```r
@@ -369,7 +376,7 @@ You are working on a local compute context and you've already set the working di
   3. C
   4. BCD
   5. B
-  6. B
+  6. E
   
 <a name="chapter-3"></a>
 # Chapter 3 - Examining and Visualizing the Data 
@@ -461,6 +468,7 @@ You are working on a local compute context and you've already set the working di
     - means of combinations... `price ~ product:region` 
 
 `rxFactors`- Another way to modify or create factors
+
 <a name="quiz3b"></a>
 ## Quiz 3b 
 
@@ -469,7 +477,7 @@ You are working on a local compute context and you've already set the working di
       + A. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf")`
       + B. `rxCrossTabs(Temp ~ Month:Day, "airquality.xdf")`
       + C. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = TRUE)`
-      + D. `xCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = FALSE)`
+      + D. `rxCrossTabs(Temp ~ Day:Month, "airquality.xdf", means = FALSE)`
 
   2. Consider the airquality dataset, which is part of Base R datasets. Assume that you have the exact same data on an XDF file named airqualiy.xdf and the following code below:
 ```
@@ -477,7 +485,7 @@ You are working on a local compute context and you've already set the working di
     rxFactors("airquality.xdf", outFile = "airquality.xdf", 
           factorInfo = list(Year = list(newLevels = unique(newlevs))))
 ```    
-Which of the following code will produce similar results?\
+Which of the following code will produce similar results?
 
 ```
 # A
@@ -546,6 +554,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
   3. C
   4. AD
   5. BCD
+  
 <a name="chapter-4"></a>  
 # Chapter 4 - Clustering and Modeling 
   - Extract quantiles by using **rxQuantile**
@@ -855,10 +864,10 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
 ```
 
   Which of the following code would you use to define a compute context that points to the SQL server? 
-      + A. `sqlCC <- RxSqlServerData(connectionString = sqlConnString)`
-      + B. `sqlCC <- RxInSqlServer(connectionString = sqlConnString)`
-      + C. `sqlCC <- RxLocalSeq(connectionString = sqlConnString)`
-      + D. `sqlCC <- rxExecuteSQLDDL(connectionString = sqlConnString)`
+     + A. `sqlCC <- RxSqlServerData(connectionString = sqlConnString)`
+     + B. `sqlCC <- RxInSqlServer(connectionString = sqlConnString)`
+     + C. `sqlCC <- RxLocalSeq(connectionString = sqlConnString)`
+     + D. `sqlCC <- rxExecuteSQLDDL(connectionString = sqlConnString)`
       
   3. Which three of the following code define a compute context that can be used with rxSetComputeContext?
       + A. `RxXdfData()`
@@ -882,8 +891,9 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
   1. B
   2. B
   3. BCD
-  4. 
-  5.
+  4. ACD
+  5. ABD?
+  
 <a name="exam"></a>  
 ## Final Exam 
 
@@ -1243,12 +1253,12 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)E)
       
 ## Answers
 
-  1. ABC
-  2. B
+  1. B
+  2. A
   3. B
-  4. B
-  5. D
-  6. ABC
+  4. D
+  5. ABC
+  6. 
   7. A
   8. D
   9. C
