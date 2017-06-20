@@ -3,6 +3,11 @@
 # List Available data
 data()
 
+#rxImport
+file_1 <- 'breast_cancer.csv'
+
+df <- rxImport(file_1)
+
 # rxGetVarInfo
 rxGetVarInfo(iris)
 
@@ -30,7 +35,6 @@ rxct <- rxCrossTabs(Price ~ Country:Type, car90)
 print(rxct, output = "means")
 rxCrossTabs(Price ~ Country:Type, car90, means = TRUE)
 
-
 # rxHistogram
 rxHistogram(~ Price, car90)
 
@@ -38,6 +42,7 @@ rxHistogram(~ Price, car90)
 rxCube(Price ~ Type, car90)
 price_cube <- rxCube(Price ~ Country:Type, car90)
 mileage_cube <- rxCube(Mileage ~ Country:Type, car90)
+mileage_cube
 library(dplyr)
 output <- bind_cols(list(price_cube, mileage_cube))
 output <- output[, c('Country', 'Type', 'Counts', 'Price', 'Mileage')]
@@ -65,6 +70,8 @@ train <- car90[train_ind,]
 test <- car90[-train_ind,]
 
 rxlm <- rxLinMod(Price ~ Mileage + Weight, train)
+rxPredict(rxlm, train)
+rxPredict(rxlm, train, computeResiduals = TRUE)
 rxPredict(rxlm, test)
 rxPredict(rxlm, test, computeResiduals = TRUE)
 
@@ -78,6 +85,21 @@ rxQuantile("Sepal.Length", iris)
 rxLinePlot(dist ~ speed, cars, type = "p")
 
 # rxCor
-rxCor(~ Price + Mileage, car90)
+rxCor(~Price + Mileage, car90)
+
+# rxFactor
+# read data in
+rxDataStep(inData = airquality, outFile = "airquality.xdf")
+# create pointer to xdf
+airquality_xdf <- RxXdfData("airquality.xdf")
+# convert Month to factor
+airquality_xdf <- rxFactors(inData = airquality_xdf, factorInfo = c("Month"))
+rxGetInfo(airquality_xdf, getVarInfo = TRUE)
+# Change factor levels
+newlevs <- c("9", "8", "7", "6", "5")
+rxFactors(airquality_xdf, outFile = "airquality.xdf",
+          factorInfo = list(Month = list(newLevels = unique(newlevs))),
+          overwrite = TRUE)
+rxGetInfo(RxXdfData("airquality.xdf"), getVarInfo = TRUE)
 
 ```
