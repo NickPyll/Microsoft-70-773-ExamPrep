@@ -1,6 +1,19 @@
 # Microsoft-70-773-ExamPrep
 Study Guide for Microsoft 70-773 - A supplement to [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info) and [Big data Revolution with R Enterprise](https://campus.datacamp.com/courses/big-data-revolution-r-enterprise-tutorial/chapter-1-introduction-1?ex=1)
 
+# Note:
+Here are some things I wished I had studied more when I was sitting in the exam room.  If somebody wants to add to this document, these would be helpful areas to add.
+  + `rxSet`
+  + Support Vector Machines
+  + Neural Networks
+  + L1 and L2 regularization
+  + rxExec
+  + Options in `rxMerge`
+  + How to load data in chunks
+  + `featurizeText`
+  + `categoricalHash`
+  + `RevoPemaR`
+  
 ## Table of Contents
 
 - [General Resources](#general-resources)
@@ -603,7 +616,7 @@ rxFactors("airquality.xdf", outFile = "airquality.xdf",
 
 `rxSplit`
 
-'rxGLM`
+`rxGLM`
   - use for generalized linear models
 
 `rxCor`
@@ -839,11 +852,16 @@ sample_data_sql <- RxSqlServerData(connectionString = sqlConnString, rowsPerRead
 **Manage Compute Context**
 
 `RxComputeContext` - Create a compute context.
+
 `rxInSqlServer` - Generate a SQL Server compute context that lets ScaleR functions run in SQL Server R Services. This compute context is currently supported only for SQL Server instances on Windows.
+
 `rxGetComputeContext` - Get the current compute context.
+
 `rxSetComputeContext` - Specify which compute context to use.
+
 `RxSpark` - point to Spark cluster
-`rxExec`
+
+`rxExec` - wish I had studied this more....
 
 <a name="quiz5"></a>
 ## Quiz 5 
@@ -1288,6 +1306,3 @@ rxPredict(regfit2, data=fstest, computeResiduals = TRUE)E)
 * [Analyzing Big Data with R Server](https://courses.edx.org/courses/course-v1:Microsoft+DAT213x+2T2017/info)
 * [Big Data Analytics with Revolution R Enterprise](https://campus.datacamp.com/courses/big-data-revolution-r-enterprise-tutorial)
 * [Microsoft R Documentation](https://msdn.microsoft.com/en-us/microsoft-r/index)
-      
-
-
